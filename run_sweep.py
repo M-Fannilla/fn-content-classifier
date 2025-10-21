@@ -1,15 +1,6 @@
-#!/usr/bin/env python3
-"""
-Weights & Biases Sweep Runner for ConvNeXt V2 Multilabel Classification
-This script runs hyperparameter sweeps using wandb.
-"""
-
-import os
 import sys
 import yaml
 import wandb
-import subprocess
-from pathlib import Path
 
 def run_sweep():
     """Run a wandb sweep for hyperparameter optimization."""
@@ -68,7 +59,7 @@ def train_with_sweep():
     
     try:
         # Create data loaders
-        train_loader, val_loader, label_columns = create_data_loaders(sweep_config)
+        train_loader, val_loader, label_columns, _, _, _ = create_data_loaders(sweep_config)
         
         # Create model
         model = create_model(sweep_config, num_classes=len(label_columns))
@@ -82,7 +73,7 @@ def train_with_sweep():
             train_loader=train_loader,
             val_loader=val_loader,
             label_columns=label_columns,
-            device=device
+            device=str(device)
         )
         
         # Train model

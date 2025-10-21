@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Dict
 
 @dataclass
 class Config:
@@ -44,7 +43,7 @@ class Config:
     wandb_tags: list = None
     
     # Model catalog
-    model_catalog: Dict[str, int] = None
+    model_catalog: dict[str, int] = None
 
     def __post_init__(self):
         if self.model_catalog is None:

@@ -1,7 +1,5 @@
-import torch
 import torch.nn as nn
 import timm
-from typing import Optional, Dict, Any
 from config import Config
 
 
@@ -75,7 +73,7 @@ def setup_model_for_training(
     return model
 
 
-def count_parameters(model: nn.Module) -> Dict[str, int]:
+def count_parameters(model: nn.Module) -> dict[str, int]:
     """Count trainable and total parameters."""
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)

@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 from sklearn.metrics import (
     roc_auc_score, 
@@ -9,7 +8,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score
 )
-from typing import Dict, List, Tuple, Optional
 import matplotlib.pyplot as plt
 
 
@@ -19,10 +17,12 @@ class MultilabelMetrics:
     def __init__(self, threshold: float = 0.5):
         self.threshold = threshold
         
-    def compute_metrics(self, 
-                       y_true: np.ndarray, 
-                       y_pred: np.ndarray,
-                       y_pred_proba: Optional[np.ndarray] = None) -> Dict[str, float]:
+    def compute_metrics(
+            self,
+            y_true: np.ndarray,
+            y_pred: np.ndarray,
+            y_pred_proba: np.ndarray = None
+    ) -> dict[str, float]:
         """Compute comprehensive metrics for multilabel classification."""
         
         metrics = {}
@@ -66,10 +66,12 @@ class MultilabelMetrics:
         
         return metrics
     
-    def compute_per_class_metrics(self, 
-                                 y_true: np.ndarray, 
-                                 y_pred: np.ndarray,
-                                 class_names: Optional[List[str]] = None) -> Dict[str, Dict[str, float]]:
+    def compute_per_class_metrics(
+            self,
+            y_true: np.ndarray,
+            y_pred: np.ndarray,
+            class_names: list[str] = None
+    ) -> dict[str, dict[str, float]]:
         """Compute per-class metrics."""
         
         y_pred_binary = (y_pred > self.threshold).astype(int)
@@ -105,10 +107,12 @@ class MultilabelMetrics:
         return per_class_metrics
 
 
-def plot_roc_curves(y_true: np.ndarray, 
-                   y_pred_proba: np.ndarray, 
-                   class_names: List[str],
-                   save_path: Optional[str] = None):
+def plot_roc_curves(
+        y_true: np.ndarray,
+        y_pred_proba: np.ndarray,
+        class_names: list[str],
+        save_path: str = None
+):
     """Plot ROC curves for each class."""
     
     num_classes = y_true.shape[1]
@@ -151,10 +155,12 @@ def plot_roc_curves(y_true: np.ndarray,
     plt.show()
 
 
-def plot_precision_recall_curves(y_true: np.ndarray, 
-                                y_pred_proba: np.ndarray, 
-                                class_names: List[str],
-                                save_path: Optional[str] = None):
+def plot_precision_recall_curves(
+        y_true: np.ndarray,
+        y_pred_proba: np.ndarray,
+        class_names: list[str],
+        save_path: str = None
+):
     """Plot Precision-Recall curves for each class."""
     
     num_classes = y_true.shape[1]

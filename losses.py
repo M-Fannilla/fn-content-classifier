@@ -8,7 +8,12 @@ import numpy as np
 class FocalLoss(nn.Module):
     """Focal Loss for addressing class imbalance in multilabel classification."""
     
-    def __init__(self, alpha: float = 1.0, gamma: float = 2.0, reduction: str = 'mean'):
+    def __init__(
+            self,
+            alpha: float = 1.0,
+            gamma: float = 2.0,
+            reduction: str = 'mean'
+    ):
         super().__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -35,8 +40,14 @@ class FocalLoss(nn.Module):
 class AsymmetricLoss(nn.Module):
     """Asymmetric Loss for multilabel classification."""
     
-    def __init__(self, gamma_neg: float = 4.0, gamma_pos: float = 1.0, 
-                 clip: float = 0.05, eps: float = 1e-8, reduction: str = 'mean'):
+    def __init__(
+            self,
+            gamma_neg: float = 4.0,
+            gamma_pos: float = 1.0,
+            clip: float = 0.05,
+            eps: float = 1e-8,
+            reduction: str = 'mean'
+    ):
         super().__init__()
         self.gamma_neg = gamma_neg
         self.gamma_pos = gamma_pos
@@ -83,7 +94,10 @@ class WeightedBCELoss(nn.Module):
         )
 
 
-def calculate_class_weights(labels: np.ndarray, method: str = 'inverse_freq') -> torch.Tensor:
+def calculate_class_weights(
+        labels: np.ndarray,
+        method: str = 'inverse_freq'
+) -> torch.Tensor:
     """Calculate class weights for handling imbalance.
     
     Args:

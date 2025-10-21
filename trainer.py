@@ -1,10 +1,9 @@
 import os
 import time
 import torch
-import torch.nn as nn
 from torch.cuda.amp import autocast, GradScaler
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from tqdm.auto import tqdm
 import numpy as np
 from typing import Dict, List, Tuple, Optional
@@ -13,7 +12,7 @@ import wandb
 
 from config import Config
 from model import ConvNeXtV2MultilabelClassifier
-from losses import get_loss_function, print_class_weights, calculate_class_weights
+from losses import get_loss_function, print_class_weights
 from metrics import MultilabelMetrics
 
 
