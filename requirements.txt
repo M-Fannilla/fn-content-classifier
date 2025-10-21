@@ -8,3 +8,5 @@ matplotlib
 tqdm
 iterative-stratification
 notebook
+huggingface
+huggingface[xet]

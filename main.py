@@ -332,8 +332,6 @@ def train(model: nn.Module,
     for epoch in range(1, epochs + 1):
         model.train()
         running_loss = 0.0
-        iterator = train_loader
-
         iterator = tqdm(train_loader, desc=f"{device.type.upper()}: Epoch {epoch}/{epochs}", leave=False)
 
         for images, targets in iterator:
