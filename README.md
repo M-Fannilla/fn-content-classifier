@@ -253,6 +253,97 @@ config.epochs = 30
 - Adjust learning rate: `config.learning_rate = 2e-5`
 - Adjust threshold: `config.threshold = 0.3`
 
-## License
+## Inference
 
-This project is open source and available under the MIT License.
+After training, you can use the trained model for inference on new images and videos.
+
+### Command Line Inference
+
+#### Basic Image Classification
+```bash
+python inference.py \
+    --model_path ./outputs/convnextv2_tiny_finetuned_best.pth \
+    --config_path ./outputs/config.json \
+    --image_paths image1.jpg image2.jpg \
+    --output_probs
+```
+
+#### Video Classification
+```bash
+python inference.py \
+    --model_path ./outputs/convnextv2_tiny_finetuned_best.pth \
+    --config_path ./outputs/config.json \
+    --video_path video.mp4 \
+    --frame_skip 30 \
+    --output_probs
+```
+
+#### Advanced Options
+```bash
+python inference.py \
+    --model_path ./outputs/convnextv2_tiny_finetuned_best.pth \
+    --config_path ./outputs/config.json \
+    --image_paths image.jpg \
+    --img_size 256 \
+    --threshold 0.7 \
+    --device cuda \
+    --save_histogram histogram.png \
+    --output_probs
+```
+
+### Interactive Gradio Interface
+
+For interactive experimentation with the model:
+
+```bash
+python main.py \
+    --model_path ./outputs/convnextv2_tiny_finetuned_best.pth \
+    --config_path ./outputs/config.json \
+    --threshold 0.5 \
+    --host 0.0.0.0 \
+    --port 7860
+```
+
+Then open your browser to `http://localhost:7860` to access the interface.
+
+#### Gradio Interface Features
+- **Image Upload**: Drag and drop or click to upload images
+- **Real-time Classification**: Instant results with probability scores
+- **Interactive Threshold**: Adjust classification threshold with a slider
+- **Probability Histogram**: Visual representation of all class probabilities
+- **Multiple Class Support**: Shows all predicted classes above threshold
+- **Responsive Design**: Works on desktop and mobile devices
+
+### Inference Parameters
+
+| Parameter | Description | Default | Options |
+|-----------|-------------|---------|---------|
+| `--model_path` | Path to trained model file | Required | `.pth` file |
+| `--config_path` | Path to config JSON file | Required | `.json` file |
+| `--image_paths` | List of image files to classify | Optional | Image files |
+| `--video_path` | Video file to classify | Optional | Video files |
+| `--img_size` | Input image size | 224 | Any integer |
+| `--threshold` | Classification threshold | 0.5 | 0.0-1.0 |
+| `--device` | Device for inference | Auto | cpu, cuda, mps |
+| `--output_probs` | Show probability values | False | Flag |
+| `--save_histogram` | Save probability histogram | None | File path |
+| `--frame_skip` | Video frame skip interval | 30 | Integer |
+
+### Testing the Inference
+
+Test the inference functionality with sample data:
+
+```bash
+python test_inference.py
+```
+
+This will create temporary sample files and test the inference engine.
+
+### Inference Engine Features
+
+- **Batch Processing**: Efficient processing of multiple images
+- **Video Support**: Frame-by-frame classification of videos
+- **Probability Visualization**: Histogram plots of classification probabilities
+- **Device Flexibility**: Automatic device detection (CPU/CUDA/MPS)
+- **Error Handling**: Robust error handling and logging
+- **Memory Efficient**: Optimized for large-scale inference

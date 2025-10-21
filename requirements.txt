@@ -12,3 +12,5 @@ tqdm
 iterative-stratification
 wandb
 weave
+gradio
+opencv-python
