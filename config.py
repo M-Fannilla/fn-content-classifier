@@ -1,5 +1,7 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
 
 @dataclass
 class Config:
@@ -54,6 +56,7 @@ class Config:
                 'convnextv2_large': self.img_size,
                 'convnextv2_huge': self.img_size,
             }
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
 
 
     def info(self) -> None:

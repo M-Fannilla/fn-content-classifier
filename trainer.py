@@ -1,12 +1,13 @@
 import os
 import time
 import torch
-from torch.cuda.amp import autocast, GradScaler
+from torch.cuda.amp import autocast
+from torch.amp import GradScaler
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 import numpy as np
-from typing import Dict, List, Tuple, Optional
 import matplotlib.pyplot as plt
 import wandb
 
@@ -23,9 +24,9 @@ class Trainer:
             self,
             model: ConvNeXtV2MultilabelClassifier,
             config: Config,
-            train_loader,
-            val_loader,
-            label_columns: List[str],
+            train_loader: DataLoader,
+            val_loader: DataLoader,
+            label_columns: list[str],
             device: str
     ):
         
@@ -74,11 +75,10 @@ class Trainer:
             factor=config.lr_reduce_factor,
             patience=config.lr_reduce_patience,
             min_lr=config.lr_reduce_min_lr,
-            verbose=True
         )
         
         # Mixed precision scaler
-        self.scaler = GradScaler()
+        self.scaler = GradScaler(device)
         
         # Metrics calculator
         self.metrics_calculator = MultilabelMetrics(threshold=config.threshold)
@@ -143,7 +143,7 @@ class Trainer:
         # Log model architecture
         wandb.watch(self.model, log="all", log_freq=100)
         
-    def _log_metrics(self, metrics: Dict[str, float], epoch: int, prefix: str = ""):
+    def _log_metrics(self, metrics: dict[str, float], epoch: int, prefix: str = ""):
         """Log metrics to wandb."""
         if self.config.use_wandb:
             log_dict = {f"{prefix}{k}": v for k, v in metrics.items()}
@@ -185,7 +185,7 @@ class Trainer:
         
         return total_loss / num_batches
     
-    def validate_epoch(self) -> Tuple[float, Dict[str, float]]:
+    def validate_epoch(self) -> tuple[float, dict[str, float]]:
         """Validate for one epoch."""
         self.model.eval()
         total_loss = 0.0
@@ -231,7 +231,7 @@ class Trainer:
         
         return avg_loss, metrics
     
-    def train(self) -> Dict[str, List[float]]:
+    def train(self) -> dict[str, list[float]]:
         """Main training loop with early stopping and learning rate reduction."""
         print(f"Starting finetuning for {self.config.epochs} epochs...")
         print(f"Model: {self.config.model_name}")
@@ -330,7 +330,7 @@ class Trainer:
         
         return self.history
     
-    def plot_training_history(self, save_path: Optional[str] = None):
+    def plot_training_history(self, save_path: str = None):
         """Plot training history."""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         
