@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="351f5b4d-6b0f-4a16-9b02-7bebd60c78c0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/actions_dataset_balance.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bodyparts_dataset_balance.ipynb" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/lottery/__init__.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/lottery/enum.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/lottery/random_numbers.py" afterDir="false" />
@@ -16,6 +18,9 @@
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/__init__.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/postgres.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_balance.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,13 +30,13 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
@@ -112,7 +117,8 @@
       <workItem from="1760686794450" duration="86000" />
       <workItem from="1760698816258" duration="17000" />
       <workItem from="1761029894399" duration="695000" />
-      <workItem from="1761030670294" duration="327000" />
+      <workItem from="1761030670294" duration="4199000" />
+      <workItem from="1761034921478" duration="8121000" />
     </task>
     <servers />
   </component>
