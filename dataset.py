@@ -5,9 +5,7 @@ from PIL import Image
 import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
-from typing import List, Tuple, Dict, Any
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
-from sklearn.model_selection import train_test_split
 from config import Config
 
 
@@ -15,7 +13,7 @@ class MultilabelImageDataset(Dataset):
     """Dataset for multilabel image classification with stratified splitting."""
     
     def __init__(self, 
-                 image_paths: List[str], 
+                 image_paths: list[str],
                  labels: np.ndarray, 
                  transform: T.Compose = None,
                  config: Config = None):
@@ -37,7 +35,11 @@ class MultilabelImageDataset(Dataset):
         except Exception as e:
             print(f"Error loading image {image_path}: {e}")
             # Return a black image if loading fails
-            image = Image.new('RGB', (self.config.img_size, self.config.img_size), (0, 0, 0))
+            image = Image.new(
+                'RGB',
+                (self.config.img_size, self.config.img_size),
+                (0, 0, 0)
+            )
         
         if self.transform:
             image = self.transform(image)
@@ -64,7 +66,9 @@ def get_transforms(config: Config, is_training: bool = True) -> T.Compose:
         ])
 
 
-def load_and_prepare_data(config: Config) -> Tuple[pd.DataFrame, List[str], np.ndarray]:
+def load_and_prepare_data(
+        config: Config
+) -> tuple[pd.DataFrame, list[str], np.ndarray]:
     """Load and prepare the dataset with stratified splitting."""
     # Load labels
     df = pd.read_csv(config.label_dataframe, index_col=0)
@@ -79,13 +83,19 @@ def load_and_prepare_data(config: Config) -> Tuple[pd.DataFrame, List[str], np.n
     return df, image_paths, labels
 
 
-def create_stratified_splits(image_paths: List[str], 
-                           labels: np.ndarray, 
-                           config: Config) -> Tuple[List[str], List[str], np.ndarray, np.ndarray]:
+def create_stratified_splits(
+        image_paths: list[str],
+        labels: np.ndarray,
+        config: Config
+) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
     """Create stratified train/test splits for multilabel data."""
     
     # Use MultilabelStratifiedKFold for proper stratification
-    mlsf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=config.seed)
+    mlsf = MultilabelStratifiedKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=config.seed
+    )
     
     # Get the first split for train/test
     train_idx, test_idx = next(mlsf.split(image_paths, labels))
@@ -98,26 +108,46 @@ def create_stratified_splits(image_paths: List[str],
     return train_paths, test_paths, train_labels, test_labels
 
 
-def create_data_loaders(config: Config) -> Tuple[DataLoader, DataLoader, List[str]]:
+def create_data_loaders(
+        config: Config
+) -> tuple[DataLoader, DataLoader, list[str]]:
     """Create train and validation data loaders."""
     # Load data
-    df, image_paths, labels = load_and_prepare_data(config)
+    df, image_paths, labels = load_and_prepare_data(config=config)
     
     # Create stratified splits
     train_paths, test_paths, train_labels, test_labels = create_stratified_splits(
-        image_paths, labels, config
+        image_paths=image_paths,
+        labels=labels,
+        config=config
     )
     
     # Get label columns for later use
     label_columns = [col for col in df.columns if col != 'file_name']
     
     # Create transforms
-    train_transform = get_transforms(config, is_training=True)
-    val_transform = get_transforms(config, is_training=False)
+    train_transform = get_transforms(
+        config=config,
+        is_training=True
+    )
+    val_transform = get_transforms(
+        config=config,
+        is_training=False
+    )
     
     # Create datasets
-    train_dataset = MultilabelImageDataset(train_paths, train_labels, train_transform, config)
-    val_dataset = MultilabelImageDataset(test_paths, test_labels, val_transform, config)
+    train_dataset = MultilabelImageDataset(
+        image_paths=train_paths,
+        labels=train_labels,
+        transform=train_transform,
+        config=config
+    )
+    val_dataset = MultilabelImageDataset(
+        image_paths=test_paths,
+        labels=test_labels,
+        transform=val_transform,
+        config=config
+    )
     
     # Create data loaders
     train_loader = DataLoader(

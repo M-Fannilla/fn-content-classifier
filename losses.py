@@ -83,24 +83,100 @@ class WeightedBCELoss(nn.Module):
         )
 
 
-def calculate_class_weights(labels: np.ndarray) -> torch.Tensor:
-    """Calculate class weights for handling imbalance."""
+def calculate_class_weights(labels: np.ndarray, method: str = 'inverse_freq') -> torch.Tensor:
+    """Calculate class weights for handling imbalance.
+    
+    Args:
+        labels: Binary labels array of shape (n_samples, n_classes)
+        method: Method to calculate weights ('inverse_freq', 'balanced', 'sqrt_inverse_freq')
+    
+    Returns:
+        Class weights tensor of shape (n_classes,)
+    """
     # Calculate positive class frequency
     pos_freq = labels.mean(axis=0)
+    n_classes = len(pos_freq)
     
-    # Calculate weights (inverse frequency)
-    weights = 1.0 / (pos_freq + 1e-8)
-    
-    # Normalize weights
-    weights = weights / weights.sum() * len(weights)
+    if method == 'inverse_freq':
+        # Inverse frequency weighting
+        weights = 1.0 / (pos_freq + 1e-8)
+        # Normalize weights
+        weights = weights / weights.sum() * n_classes
+        
+    elif method == 'balanced':
+        # Balanced weighting (sklearn style)
+        n_samples = len(labels)
+        n_pos = labels.sum(axis=0)
+        n_neg = n_samples - n_pos
+        
+        # Avoid division by zero
+        weights = n_samples / (2.0 * np.maximum(n_pos, 1e-8))
+        
+    elif method == 'sqrt_inverse_freq':
+        # Square root of inverse frequency
+        weights = 1.0 / np.sqrt(pos_freq + 1e-8)
+        # Normalize weights
+        weights = weights / weights.sum() * n_classes
+        
+    else:
+        raise ValueError(f"Unknown class weight method: {method}")
     
     return torch.FloatTensor(weights)
 
 
-def get_loss_function(loss_type: str = 'focal', 
-                     labels: Optional[np.ndarray] = None,
-                     device: str = 'cuda') -> nn.Module:
-    """Get the appropriate loss function for multilabel classification."""
+def print_class_weights(
+        labels: np.ndarray,
+        class_names: List[str],
+        method: str = 'inverse_freq'
+) -> torch.Tensor:
+    """Calculate and print class weights with detailed information.
+    
+    Args:
+        labels: Binary labels array of shape (n_samples, n_classes)
+        class_names: List of class names
+        method: Method to calculate weights
+    
+    Returns:
+        Class weights tensor
+    """
+    pos_freq = labels.mean(axis=0)
+    weights = calculate_class_weights(labels, method)
+    
+    print(f"\nClass Imbalance Analysis (Method: {method}):")
+    print("=" * 60)
+    print(f"{'Class':<20} {'Pos Freq':<10} {'Count':<8} {'Weight':<10}")
+    print("-" * 60)
+    
+    for i, (class_name, freq, weight) in enumerate(zip(class_names, pos_freq, weights)):
+        count = int(freq * len(labels))
+        print(f"{class_name:<20} {freq:<10.4f} {count:<8} {weight:<10.4f}")
+    
+    print("-" * 60)
+    print(f"Total samples: {len(labels)}")
+    print(f"Weight range: [{weights.min():.4f}, {weights.max():.4f}]")
+    print(f"Weight std: {weights.std():.4f}")
+    print("=" * 60)
+    
+    return weights
+
+
+def get_loss_function(
+        loss_type: str = 'focal',
+        labels: Optional[np.ndarray] = None,
+        device: str = 'cuda',
+        class_weight_method: str = 'inverse_freq'
+) -> nn.Module:
+    """Get the appropriate loss function for multilabel classification.
+    
+    Args:
+        loss_type: Type of loss function ('focal', 'asymmetric', 'weighted_bce', 'bce')
+        labels: Training labels for calculating class weights
+        device: Device to place weights on
+        class_weight_method: Method for calculating class weights
+    
+    Returns:
+        Loss function module
+    """
     
     if loss_type == 'focal':
         return FocalLoss(alpha=1.0, gamma=2.0)
@@ -110,7 +186,7 @@ def get_loss_function(loss_type: str = 'focal',
     
     elif loss_type == 'weighted_bce':
         if labels is not None:
-            pos_weight = calculate_class_weights(labels)
+            pos_weight = calculate_class_weights(labels, method=class_weight_method)
             pos_weight = pos_weight.to(device)
             return WeightedBCELoss(pos_weight=pos_weight)
         else:

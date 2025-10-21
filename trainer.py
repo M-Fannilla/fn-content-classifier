@@ -13,20 +13,22 @@ import wandb
 
 from config import Config
 from model import ConvNeXtV2MultilabelClassifier
-from losses import get_loss_function
+from losses import get_loss_function, print_class_weights, calculate_class_weights
 from metrics import MultilabelMetrics
 
 
 class Trainer:
     """Training class for ConvNeXt V2 multilabel classification."""
     
-    def __init__(self, 
-                 model: ConvNeXtV2MultilabelClassifier,
-                 config: Config,
-                 train_loader,
-                 val_loader,
-                 label_columns: List[str],
-                 device: str = 'cuda'):
+    def __init__(
+            self,
+            model: ConvNeXtV2MultilabelClassifier,
+            config: Config,
+            train_loader,
+            val_loader,
+            label_columns: List[str],
+            device: str
+    ):
         
         self.model = model
         self.config = config
@@ -38,8 +40,26 @@ class Trainer:
         # Move model to device
         self.model = self.model.to(device)
         
+        # Calculate class weights if enabled
+        self.class_weights = None
+        if config.use_class_weights:
+            print("Calculating class weights...")
+            train_labels = train_loader.dataset.labels
+            self.class_weights = print_class_weights(
+                train_labels, 
+                label_columns, 
+                method=config.class_weight_method
+            )
+        else:
+            print("Class weights disabled.")
+        
         # Setup loss function
-        self.criterion = get_loss_function('focal', device=device)
+        self.criterion = get_loss_function(
+            loss_type=config.loss_type,
+            labels=train_loader.dataset.labels if config.use_class_weights else None,
+            device=device,
+            class_weight_method=config.class_weight_method
+        )
         
         # Setup optimizer
         self.optimizer = AdamW(
@@ -111,6 +131,9 @@ class Trainer:
                 'lr_reduce_patience': self.config.lr_reduce_patience,
                 'lr_reduce_factor': self.config.lr_reduce_factor,
                 'lr_reduce_min_lr': self.config.lr_reduce_min_lr,
+                'use_class_weights': self.config.use_class_weights,
+                'class_weight_method': self.config.class_weight_method,
+                'loss_type': self.config.loss_type,
                 'num_classes': len(self.label_columns),
                 'train_samples': len(self.train_loader.dataset),
                 'val_samples': len(self.val_loader.dataset),
@@ -215,6 +238,10 @@ class Trainer:
         print(f"Model: {self.config.model_name}")
         print(f"Learning rate: {self.config.learning_rate}")
         print(f"Device: {self.device}")
+        print(f"Loss function: {self.config.loss_type}")
+        print(f"Class weights: {'Enabled' if self.config.use_class_weights else 'Disabled'}")
+        if self.config.use_class_weights:
+            print(f"Class weight method: {self.config.class_weight_method}")
         print(f"Early stopping patience: {self.config.early_stopping_patience}")
         print(f"LR reduction patience: {self.config.lr_reduce_patience}")
         print("-" * 50)

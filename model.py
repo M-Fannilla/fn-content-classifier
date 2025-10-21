@@ -8,11 +8,13 @@ from config import Config
 class ConvNeXtV2MultilabelClassifier(nn.Module):
     """ConvNeXt V2 model for multilabel classification."""
     
-    def __init__(self, 
-                 model_name: str, 
-                 num_classes: int, 
-                 pretrained: bool = True,
-                 dropout_rate: float = 0.2):
+    def __init__(
+            self,
+            model_name: str,
+            num_classes: int,
+            pretrained: bool = True,
+            dropout_rate: float = 0.2
+    ):
         super().__init__()
         
         self.model_name = model_name
@@ -56,8 +58,10 @@ def create_model(config: Config, num_classes: int) -> ConvNeXtV2MultilabelClassi
     return model
 
 
-def setup_model_for_training(model: ConvNeXtV2MultilabelClassifier, 
-                           config: Config) -> ConvNeXtV2MultilabelClassifier:
+def setup_model_for_training(
+        model: ConvNeXtV2MultilabelClassifier,
+        config: Config
+) -> ConvNeXtV2MultilabelClassifier:
     """Setup model for finetuning (freeze backbone, train classifier only)."""
     
     # Freeze backbone for finetuning

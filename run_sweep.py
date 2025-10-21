@@ -47,6 +47,9 @@ def train_with_sweep():
         early_stopping_patience=config.early_stopping_patience,
         lr_reduce_patience=config.lr_reduce_patience,
         lr_reduce_factor=config.lr_reduce_factor,
+        use_class_weights=config.use_class_weights,
+        class_weight_method=config.class_weight_method,
+        loss_type=config.loss_type,
         epochs=config.epochs,
         use_wandb=True,
         wandb_project=config.wandb_project,
@@ -90,7 +93,10 @@ def train_with_sweep():
             'final_val_f1_micro': trainer.best_val_f1,
             'final_epochs': len(history['train_loss']),
             'final_train_loss': history['train_loss'][-1],
-            'final_val_loss': history['val_loss'][-1]
+            'final_val_loss': history['val_loss'][-1],
+            'use_class_weights': config.use_class_weights,
+            'class_weight_method': config.class_weight_method,
+            'loss_type': config.loss_type
         }
         
         wandb.log(final_metrics)

@@ -31,16 +31,21 @@ class Config:
     lr_reduce_factor: float = 0.5
     lr_reduce_min_lr: float = 1e-7
     
+    # Class imbalance handling
+    use_class_weights: bool = True
+    class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq'
+    loss_type: str = 'focal'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
+    
     # Weights & Biases settings
     use_wandb: bool = False
-    wandb_project: str = 'convnextv2-multilabel-classification'
-    wandb_entity: str = None  # Set to your wandb username/team
+    wandb_project: str = 'fn-content-classifier'
+    wandb_entity: str = 'miloszbertman'  # Set to your wandb username/team
     wandb_run_name: str = None  # Will be auto-generated if None
     wandb_tags: list = None
     
     # Model catalog
     model_catalog: Dict[str, int] = None
-    
+
     def __post_init__(self):
         if self.model_catalog is None:
             self.model_catalog = {
@@ -50,10 +55,21 @@ class Config:
                 'convnextv2_large': self.img_size,
                 'convnextv2_huge': self.img_size,
             }
-    
+
 
     def info(self) -> None:
         print("Configuration:")
         for field in self.__dataclass_fields__:
             print(f"  {field}: {getattr(self, field)}")
+
+    def wandb_config(self):
+        if not self.use_wandb:
+            print("Wandb is disabled.")
+            return
+
+        print("Wandb Configuration:")
+        print(f"  Enabled: {self.use_wandb}")
+        print(f"  Project: {self.wandb_project}")
+        print(f"  Entity: {self.wandb_entity}")
+        print(f"  Tags: {self.wandb_tags}")
 
