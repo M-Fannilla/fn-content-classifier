@@ -1,0 +1,34 @@
+program: model_train.ipynb
+method: bayes
+metric:
+  name: val_f1_micro
+  goal: maximize
+parameters:
+  model_name:
+    values: ["convnextv2_nano", "convnextv2_tiny", "convnextv2_base"]
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1e-6
+    max: 1e-3
+  batch_size:
+    values: [16, 32, 64]
+  img_size:
+    values: [224, 384]
+  threshold:
+    values: [0.4, 0.5, 0.6]
+  early_stopping_patience:
+    values: [5, 10]
+  lr_reduce_patience:
+    values: [3, 5]
+  lr_reduce_factor:
+    values: [0.3, 0.5, 0.7]
+  epochs:
+    value: 20  # Fixed for sweep
+  use_wandb:
+    value: true  # Always use wandb for sweeps
+  wandb_project:
+    value: "fn-content-classifier"
+  wandb_entity:
+    value: null  # Set to your wandb username/team
+  wandb_tags:
+    value: ["sweep", "multilabel", "convnextv2"]
