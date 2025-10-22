@@ -16,12 +16,9 @@
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/__init__.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/postgres.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/fn-poc-classifier.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fn-poc-classifier.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/model_train.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +119,7 @@
       <workItem from="1761034921478" duration="8880000" />
       <workItem from="1761048533599" duration="12236000" />
       <workItem from="1761073726137" duration="1176000" />
-      <workItem from="1761075354045" duration="228000" />
+      <workItem from="1761075354045" duration="1943000" />
     </task>
     <servers />
   </component>

@@ -12,5 +12,7 @@ tqdm
 iterative-stratification
 wandb
 weave
+jupyter
+ipywidgets
 gradio
 opencv-python
