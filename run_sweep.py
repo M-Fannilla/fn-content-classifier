@@ -11,7 +11,7 @@ def run_sweep():
 
     # Initialize wandb sweep
     # sweep_id = 'r8voaln7'
-    sweep_id = input("Input the sweep_id:")
+    sweep_id = input("Input the sweep_id: ")
     if not sweep_id:
         sweep_id = wandb.sweep(sweep_config)
 
@@ -25,7 +25,9 @@ def train_with_sweep():
     """Training function for wandb sweep."""
 
     # Initialize wandb run
-    run = wandb.init()
+    run = wandb.init(
+        project='fn-content-classifier'
+    )
 
     # Get hyperparameters from wandb
     config = wandb.config
