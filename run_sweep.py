@@ -24,6 +24,11 @@ def train_with_sweep():
     """Training function for wandb sweep."""
 
     # Get hyperparameters from wandb
+    # Initialize wandb run with config values
+    wandb.init(
+        project="fn-content-classifier",
+        entity="miloszbertman",
+    )
     config = wandb.config
 
     # Create configuration object with sweep parameters
@@ -45,12 +50,6 @@ def train_with_sweep():
         wandb_project=config.wandb_project,
         wandb_entity=config.wandb_entity,
         wandb_tags=config.wandb_tags
-    )
-
-    # Initialize wandb run with config values
-    run = wandb.init(
-        project=sweep_config.wandb_project,
-        entity=sweep_config.wandb_entity
     )
 
     # Import training modules
