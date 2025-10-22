@@ -9,12 +9,30 @@ def run_sweep():
     with open('wandb_sweep_config.yaml', 'r') as f:
         sweep_config = yaml.safe_load(f)
 
+    # Get entity and project from config
+    entity = sweep_config.get('wandb_entity', 'miloszbertman')
+    project = sweep_config.get('wandb_project', 'fn-content-classifier')
+    
     # Initialize wandb sweep
-    sweep_id = input("Input the sweep_id: ")
+    sweep_id = input("Input the sweep_id (or press Enter to create new): ").strip()
+    
     if not sweep_id:
-        sweep_id = wandb.sweep(sweep_config)
+        # Create new sweep
+        sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
+        print(f"New sweep created with ID: {sweep_id}")
+    else:
+        # Validate existing sweep
+        try:
+            # Try to get sweep info to validate it exists
+            api = wandb.Api()
+            sweep = api.sweep(f"{entity}/{project}/{sweep_id}")
+            print(f"Using existing sweep with ID: {sweep_id}")
+        except Exception as e:
+            print(f"Error accessing sweep {sweep_id}: {e}")
+            print("Creating new sweep instead...")
+            sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
+            print(f"New sweep created with ID: {sweep_id}")
 
-    print(f"Sweep created with ID: {sweep_id}")
     print(f"Sweep URL: https://wandb.ai/sweeps/{sweep_id}")
 
     # Run the sweep
@@ -25,10 +43,16 @@ def train_with_sweep():
 
     # Get hyperparameters from wandb
     # Initialize wandb run with config values
-    wandb.init(
-        project="fn-content-classifier",
-        entity="miloszbertman",
-    )
+    try:
+        wandb.init(
+            project="fn-content-classifier",
+            entity="miloszbertman",
+        )
+    except Exception as e:
+        print(f"Failed to initialize wandb run: {e}")
+        # Try without project/entity specification
+        wandb.init()
+    
     config = wandb.config
 
     # Create configuration object with sweep parameters
