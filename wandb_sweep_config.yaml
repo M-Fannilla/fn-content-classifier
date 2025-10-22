@@ -34,6 +34,6 @@ parameters:
   wandb_project:
     value: "fn-content-classifier"
   wandb_entity:
-    value: null  # Set to your wandb username/team
+    value: "miloszbertman"  # Set to your wandb username/team
   wandb_tags:
     value: ["sweep", "multilabel", "convnextv2"]

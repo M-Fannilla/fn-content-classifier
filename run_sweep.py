@@ -10,7 +10,6 @@ def run_sweep():
         sweep_config = yaml.safe_load(f)
 
     # Initialize wandb sweep
-    # sweep_id = 'r8voaln7'
     sweep_id = input("Input the sweep_id: ")
     if not sweep_id:
         sweep_id = wandb.sweep(sweep_config)
@@ -23,11 +22,6 @@ def run_sweep():
 
 def train_with_sweep():
     """Training function for wandb sweep."""
-
-    # Initialize wandb run
-    run = wandb.init(
-        project='fn-content-classifier'
-    )
 
     # Get hyperparameters from wandb
     config = wandb.config
@@ -51,6 +45,12 @@ def train_with_sweep():
         wandb_project=config.wandb_project,
         wandb_entity=config.wandb_entity,
         wandb_tags=config.wandb_tags
+    )
+
+    # Initialize wandb run with config values
+    run = wandb.init(
+        project=sweep_config.wandb_project,
+        entity=sweep_config.wandb_entity
     )
 
     # Import training modules
