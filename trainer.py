@@ -1,8 +1,7 @@
 import os
 import time
 import torch
-from torch.cuda.amp import autocast
-from torch.amp import GradScaler
+from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
@@ -165,7 +164,7 @@ class Trainer:
             self.optimizer.zero_grad()
             
             # Mixed precision forward pass
-            with autocast():
+            with autocast(str(self.device)):
                 outputs = self.model(images)
                 loss = self.criterion(outputs, labels)
             
@@ -200,7 +199,7 @@ class Trainer:
                 images = images.to(self.device, non_blocking=True)
                 labels = labels.to(self.device, non_blocking=True)
                 
-                with autocast():
+                with autocast(str(self.device)):
                     outputs = self.model(images)
                     loss = self.criterion(outputs, labels)
                 
