@@ -300,6 +300,9 @@ class Trainer:
                 self.best_val_f1 = current_f1
                 self.best_model_state = self.model.state_dict().copy()
                 print(f"  → New best F1 Micro: {current_f1:.4f}")
+                
+                # Save the best model
+                self.save_model(self.best_model_name)
             
             # Early stopping check
             if current_f1 > self.best_val_f1_for_early_stopping + self.config.early_stopping_min_delta:
@@ -319,6 +322,9 @@ class Trainer:
                   f"Val ROC AUC Micro: {val_metrics.get('roc_auc_micro', 0.0):.4f}, "
                   f"LR: {current_lr:.2e}, "
                   f"Time: {epoch_time:.2f}s")
+            
+            # Clear GPU cache after each epoch to prevent memory accumulation
+            torch.cuda.empty_cache()
             
             # Early stopping
             if self.early_stopping_counter >= self.config.early_stopping_patience:
@@ -385,10 +391,15 @@ class Trainer:
     
     def save_model(self, path: str):
         """Save the trained model."""
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        # Create directory if it doesn't exist
+        if os.path.dirname(path):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+        
+        # Use best model state if available, otherwise current model state
+        model_state = self.best_model_state if self.best_model_state is not None else self.model.state_dict()
         
         torch.save({
-            'model_state_dict': self.model.state_dict(),
+            'model_state_dict': model_state,
             'config': self.config,
             'label_columns': self.label_columns,
             'history': self.history,
