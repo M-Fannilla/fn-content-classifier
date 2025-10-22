@@ -4,31 +4,35 @@ import wandb
 
 def run_sweep():
     """Run a wandb sweep for hyperparameter optimization."""
-    
+
     # Load sweep configuration
     with open('wandb_sweep_config.yaml', 'r') as f:
         sweep_config = yaml.safe_load(f)
-    
+
     # Initialize wandb sweep
-    sweep_id = wandb.sweep(sweep_config)
+    # sweep_id = 'r8voaln7'
+    sweep_id = input("Input the sweep_id:")
+    if not sweep_id:
+        sweep_id = wandb.sweep(sweep_config)
+
     print(f"Sweep created with ID: {sweep_id}")
     print(f"Sweep URL: https://wandb.ai/sweeps/{sweep_id}")
-    
+
     # Run the sweep
     wandb.agent(sweep_id, function=train_with_sweep, count=50)  # Run 50 trials
 
 def train_with_sweep():
     """Training function for wandb sweep."""
-    
+
     # Initialize wandb run
     run = wandb.init()
-    
+
     # Get hyperparameters from wandb
     config = wandb.config
-    
+
     # Create configuration object with sweep parameters
     from config import Config
-    
+
     sweep_config = Config(
         model_name=config.model_name,
         learning_rate=config.learning_rate,
@@ -46,25 +50,25 @@ def train_with_sweep():
         wandb_entity=config.wandb_entity,
         wandb_tags=config.wandb_tags
     )
-    
+
     # Import training modules
     from dataset import create_data_loaders
     from model import create_model, setup_model_for_training
     from trainer import Trainer
     import torch
-    
+
     # Set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    
+
     try:
         # Create data loaders
         train_loader, val_loader, label_columns, _, _, _ = create_data_loaders(sweep_config)
-        
+
         # Create model
         model = create_model(sweep_config, num_classes=len(label_columns))
         model = setup_model_for_training(model, sweep_config)
         model = model.to(device)
-        
+
         # Create trainer
         trainer = Trainer(
             model=model,
@@ -74,10 +78,10 @@ def train_with_sweep():
             label_columns=label_columns,
             device=str(device)
         )
-        
+
         # Train model
         history = trainer.train()
-        
+
         # Log final metrics
         final_metrics = {
             'final_val_f1_micro': trainer.best_val_f1,
@@ -87,11 +91,11 @@ def train_with_sweep():
             'class_weight_method': config.class_weight_method,
             'loss_type': config.loss_type
         }
-        
+
         wandb.log(final_metrics)
-        
+
         print(f"Training completed! Best F1 Micro: {trainer.best_val_f1:.4f}")
-        
+
     except Exception as e:
         print(f"Training failed with error: {e}")
         wandb.log({"error": str(e)})
@@ -102,6 +106,6 @@ if __name__ == "__main__":
     if not wandb.api.api_key:
         print("Please run 'wandb login' first!")
         sys.exit(1)
-    
+
     # Run the sweep
     run_sweep()

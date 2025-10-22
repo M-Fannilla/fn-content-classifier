@@ -11,9 +11,9 @@ parameters:
     min: 1e-6
     max: 1e-3
   batch_size:
-    values: [16, 32, 64]
+    values: [32, 64, 128]
   img_size:
-    values: [224, 384]
+    values: [224]
   threshold:
     values: [0.4, 0.5, 0.6]
   early_stopping_patience:
@@ -26,7 +26,7 @@ parameters:
   class_weight_method:
     values: ["inverse_freq", "balanced", "sqrt_inverse_freq", "none"]
   loss_type:
-    values: ["focal", "asymmetric", "weighted_bce", "bce"]
+    values: ["focal", "asymmetric", "weighted_bce"]
   epochs:
     value: 20  # Fixed for sweep
   use_wandb:
