@@ -41,7 +41,7 @@ class Trainer:
         
         # Calculate class weights if enabled
         self.class_weights = None
-        if config.use_class_weights:
+        if config.class_weight_method != 'none':
             print("Calculating class weights...")
             train_labels = train_loader.dataset.labels
             self.class_weights = print_class_weights(
@@ -55,7 +55,7 @@ class Trainer:
         # Setup loss function
         self.criterion = get_loss_function(
             loss_type=config.loss_type,
-            labels=train_loader.dataset.labels if config.use_class_weights else None,
+            labels=train_loader.dataset.labels if config.class_weight_method != 'none' else None,
             device=device,
             class_weight_method=config.class_weight_method
         )
@@ -141,7 +141,6 @@ class Trainer:
                 'lr_reduce_patience': self.config.lr_reduce_patience,
                 'lr_reduce_factor': self.config.lr_reduce_factor,
                 'lr_reduce_min_lr': self.config.lr_reduce_min_lr,
-                'use_class_weights': self.config.use_class_weights,
                 'class_weight_method': self.config.class_weight_method,
                 'loss_type': self.config.loss_type,
                 'num_classes': len(self.label_columns),
@@ -249,9 +248,7 @@ class Trainer:
         print(f"Learning rate: {self.config.learning_rate}")
         print(f"Device: {self.device}")
         print(f"Loss function: {self.config.loss_type}")
-        print(f"Class weights: {'Enabled' if self.config.use_class_weights else 'Disabled'}")
-        if self.config.use_class_weights:
-            print(f"Class weight method: {self.config.class_weight_method}")
+        print(f"Class weight method: {self.config.class_weight_method}")
         print(f"Early stopping patience: {self.config.early_stopping_patience}")
         print(f"LR reduction patience: {self.config.lr_reduce_patience}")
         print("-" * 50)

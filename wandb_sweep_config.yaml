@@ -23,8 +23,6 @@ parameters:
   lr_reduce_factor:
     values: [0.3, 0.5, 0.7]
   # Class imbalance handling
-  use_class_weights:
-    values: [true, false]
   class_weight_method:
     values: ["inverse_freq", "balanced", "sqrt_inverse_freq", "none"]
   loss_type:
