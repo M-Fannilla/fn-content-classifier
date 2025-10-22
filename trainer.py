@@ -1,6 +1,7 @@
 import os
 import time
 import torch
+from sympy.integrals.heurisch import components
 from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -103,12 +104,25 @@ class Trainer:
         # Initialize wandb if enabled
         if config.use_wandb:
             self._init_wandb()
+
+        now = str(time.time())
+        self.bestmodel_path = f"{now}_{self.config.model_name}.pth"
     
     def _init_wandb(self):
         """Initialize Weights & Biases logging."""
         # Generate run name if not provided
         run_name = self.config.wandb_run_name
         if run_name is None:
+            components = [
+                self.config.model_name,
+                f"lr{self.config.learning_rate}",
+                f"bs{self.config.batch_size}",
+                f"sz{self.config.img_size}",
+                f"ep{self.config.epochs}",
+                f"lt{self.config.loss_type}",
+                f"cwm{self.config.class_weight_method}"
+
+            ]
             run_name = f"{self.config.model_name}_{self.config.learning_rate}_{self.config.epochs}ep"
         
         # Initialize wandb

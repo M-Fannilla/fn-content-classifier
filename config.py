@@ -33,8 +33,7 @@ class Config:
     lr_reduce_min_lr: float = 1e-7
     
     # Class imbalance handling
-    use_class_weights: bool = True
-    class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq'
+    class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none
     loss_type: str = 'focal'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
     
     # Weights & Biases settings

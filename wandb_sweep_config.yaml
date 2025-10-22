@@ -26,7 +26,7 @@ parameters:
   use_class_weights:
     values: [true, false]
   class_weight_method:
-    values: ["inverse_freq", "balanced", "sqrt_inverse_freq"]
+    values: ["inverse_freq", "balanced", "sqrt_inverse_freq", "none"]
   loss_type:
     values: ["focal", "asymmetric", "weighted_bce", "bce"]
   epochs:

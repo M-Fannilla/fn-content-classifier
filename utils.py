@@ -13,11 +13,10 @@ def visualize_predictions(
     model: torch.nn.Module,
     test_images: torch.Tensor,
     test_labels: torch.Tensor,
-    label_columns: List[str],
+    label_columns: list[str],
     threshold: float = 0.5,
-    num_samples: int = 8,
-    figsize: Tuple[int, int] = (16, 12),
-    save_path: Optional[str] = None
+    figsize: tuple[int, int] = (16, 12),
+    save_path: str = None
 ) -> None:
     """Visualize model predictions on test images.
     
@@ -27,7 +26,6 @@ def visualize_predictions(
         test_labels: Tensor of true labels (N, num_classes)
         label_columns: List of class names
         threshold: Threshold for binary classification
-        num_samples: Number of random samples to visualize
         figsize: Figure size for the plot
         save_path: Optional path to save the plot
     """
@@ -39,12 +37,7 @@ def visualize_predictions(
     
     # Get random indices
     total_samples = len(test_images)
-    if num_samples > total_samples:
-        num_samples = total_samples
-        print(f"Warning: Requested {num_samples} samples but only {total_samples} available. Showing all.")
-    
-    random_indices = random.sample(range(total_samples), num_samples)
-    
+
     # Get predictions
     with torch.no_grad():
         predictions = model(test_images[random_indices])
