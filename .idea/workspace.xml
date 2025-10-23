@@ -11,7 +11,7 @@
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/postgres.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wandb_sweep_config.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +116,7 @@
       <workItem from="1761075354045" duration="10363000" />
       <workItem from="1761202648483" duration="1720000" />
       <workItem from="1761204869700" duration="56000" />
-      <workItem from="1761204940758" duration="6802000" />
+      <workItem from="1761204940758" duration="7020000" />
     </task>
     <servers />
   </component>

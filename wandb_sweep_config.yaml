@@ -4,31 +4,23 @@ metric:
   name: val_f1_micro
   goal: maximize
 parameters:
-  model_name:
-    values: ["convnextv2_nano", "convnextv2_tiny", "convnextv2_base"]
   learning_rate:
     distribution: log_uniform_values
     min: 1e-6
     max: 1e-3
   batch_size:
-    values: [32, 64, 128]
+    values: [ 32, 64, 128 ]
   img_size:
-    values: [224]
+    values: [ 224 ]
   threshold:
-    values: [0.4, 0.5, 0.6]
-  early_stopping_patience:
-    values: [5, 10]
-  lr_reduce_patience:
-    values: [3, 5]
-  lr_reduce_factor:
-    values: [0.3, 0.5, 0.7]
+    values: [ 0.4, 0.5 ]
   # Class imbalance handling
   class_weight_method:
-    values: ["inverse_freq", "balanced", "sqrt_inverse_freq", "none"]
+    values: [ "inverse_freq", "balanced", "sqrt_inverse_freq", "none" ]
   loss_type:
-    values: ["focal", "asymmetric", "weighted_bce"]
+    values: [ "focal", "asymmetric", "weighted_bce" ]
   epochs:
-    value: 20  # Fixed for sweep
+    value: 5  # Fixed for sweep
   use_wandb:
     value: true  # Always use wandb for sweeps
   wandb_project:
@@ -36,4 +28,4 @@ parameters:
   wandb_entity:
     value: "miloszbertman"  # Set to your wandb username/team
   wandb_tags:
-    value: ["sweep", "multilabel", "convnextv2"]
+    value: [ "sweep", "multilabel", "convnextv2" ]
