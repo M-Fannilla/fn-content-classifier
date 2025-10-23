@@ -386,10 +386,13 @@ class Trainer:
 
     def _save_pytorch(self, filename: str = "convnextv2_finetuned.pth"):
         torch.save({
+            'model_name': self.config.model_name,
             'model_state_dict': self.model.backbone.state_dict(),
             'labels_columns': self.label_columns,
             'image_size': self.config.img_size,
+            'class_weights': self.class_weights,
         }, filename)
+
         print(f"Saved PyTorch model to {filename}")
 
     def load_model(self, path: str):

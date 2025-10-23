@@ -16,6 +16,5 @@ jupyter
 ipywidgets
 gradio
 opencv-python
-torch-tensorrt
-nvidia-modelopt
-nvidia-tensorrt
+onnx
+onnxscript
