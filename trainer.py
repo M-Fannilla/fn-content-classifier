@@ -235,7 +235,7 @@ class Trainer:
         
         return avg_loss, metrics
     
-    def train(self) -> dict[str, list[float]]:
+    def train(self, save_model: bool = True) -> dict[str, list[float]]:
         """Main training loop with early stopping and learning rate reduction."""
         
         for epoch in range(self.config.epochs):
@@ -257,7 +257,16 @@ class Trainer:
             self.history['val_f1_macro'].append(val_metrics['f1_macro'])
             self.history['val_roc_auc_micro'].append(val_metrics.get('roc_auc_micro', 0.0))
             self.history['val_roc_auc_macro'].append(val_metrics.get('roc_auc_macro', 0.0))
-            
+
+            # Check for best model
+            current_f1 = val_metrics['f1_micro']
+            if current_f1 > self.best_val_f1:
+                self.best_val_f1 = current_f1
+                self.best_model_state = self.model.state_dict().copy()
+                print(f"  → New best F1 Micro: {current_f1:.4f}")
+                if save_model:
+                    self.save_model(self.best_model_name)
+
             # Log metrics to wandb
             if self.config.use_wandb:
                 wandb.log({
@@ -278,13 +287,6 @@ class Trainer:
                     'learning_rate': self.optimizer.param_groups[0]['lr'],
                     'best_val_f1': self.best_val_f1
                 })
-            
-            # Check for best model
-            current_f1 = val_metrics['f1_micro']
-            if current_f1 > self.best_val_f1:
-                self.best_val_f1 = current_f1
-                self.best_model_state = self.model.state_dict().copy()
-                print(f"  → New best F1 Micro: {current_f1:.4f}")
 
             # Early stopping check
             if current_f1 > self.best_val_f1_for_early_stopping + self.config.early_stopping_min_delta:
@@ -318,9 +320,6 @@ class Trainer:
         # Load best model
         self.model.load_state_dict(self.best_model_state)
         print(f"\nLoaded best model with F1 Micro: {self.best_val_f1:.4f}")
-
-        # Save the best model
-        self.save_model(self.best_model_name)
 
         # Finish wandb run
         if self.config.use_wandb:

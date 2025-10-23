@@ -105,7 +105,7 @@ def train_with_sweep():
         )
 
         # Train model
-        history = trainer.train()
+        history = trainer.train(save_model=False)
 
         # Log final metrics
         final_metrics = {
