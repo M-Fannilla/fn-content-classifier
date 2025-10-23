@@ -1,51 +1,50 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
 
 
 @dataclass
 class Config:
     # Dataset settings
-    model_type: Literal['action', 'bodyparts', 'positions'] = 'action'
+    model_type: str = 'action'
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
 
     dataset_src: str = './fn-content-dataset/compiled'
     label_dataframe: str = f"./fn-content-dataset/compiled/{model_type}_labels.csv"
     output_dir: str = f'./outputs/{model_type}'
-    
+
     # Training settings
     seed: int = 42
     batch_size: int = 32
     num_workers: int = os.cpu_count() // 2
-    threshold: float = 0.4 # 0.5 is fine but 0.4 seems to work better for this task
+    threshold: float = 0.4
     img_size: int = 224
     model_name: str = 'convnextv2_tiny'
     # Finetuning settings
-    learning_rate: float = 1e-5
-    epochs: int = 20
-    
+    learning_rate: float = 1e-4
+    epochs: int = 6
+
     # Early stopping settings
     early_stopping_patience: int = 3
     early_stopping_min_delta: float = 0.001
-    
+
     # Learning rate reduction on plateau
     lr_reduce_patience: int = 2
     lr_reduce_factor: float = 0.5
     lr_reduce_min_lr: float = 1e-7
-    
+
     # Class imbalance handling
-    class_weight_method: Literal['inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none'] = 'inverse_freq'
-    loss_type: Literal['focal', 'asymmetric', 'weighted_bce', 'bce'] = 'focal'
-    
+    class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none
+    loss_type: str = 'focal'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
+
     # Weights & Biases settings
     use_wandb: bool = False
     wandb_project: str = 'fn-content-classifier'
     wandb_entity: str = 'miloszbertman'  # Set to your wandb username/team
     wandb_run_name: str = None  # Will be auto-generated if None
     wandb_tags: list = None
-    
+
     def __post_init__(self):
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -75,4 +74,3 @@ class Config:
         print(f"  Project: {self.wandb_project}")
         print(f"  Entity: {self.wandb_entity}")
         print(f"  Tags: {self.wandb_tags}")
-

@@ -63,17 +63,12 @@ def train_with_sweep():
         learning_rate=config.learning_rate,
         batch_size=config.batch_size,
         img_size=config.img_size,
-        threshold=config.threshold,
-        early_stopping_patience=config.early_stopping_patience,
-        lr_reduce_patience=config.lr_reduce_patience,
-        lr_reduce_factor=config.lr_reduce_factor,
         class_weight_method=config.class_weight_method,
         loss_type=config.loss_type,
-        epochs=config.epochs,
         use_wandb=True,
-        wandb_project=config.wandb_project,
-        wandb_entity=config.wandb_entity,
-        wandb_tags=config.wandb_tags
+        wandb_project="fn-content-classifier",
+        wandb_entity="miloszbertman",
+        wandb_tags=["sweep", "multilabel", "convnextv2"]
     )
 
     # Import training modules
