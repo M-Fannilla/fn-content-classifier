@@ -6,11 +6,13 @@ from pathlib import Path
 @dataclass
 class Config:
     # Dataset settings
+    model_type: str = 'action'
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
+
     dataset_src: str = './fn-content-dataset/compiled'
-    label_dataframe: str = './fn-content-dataset/compiled/action_labels.csv'
-    output_dir: str = './outputs'
+    label_dataframe: str = f"./fn-content-dataset/compiled/{model_type}_labels.csv"
+    output_dir: str = f'./outputs/{model_type}'
     
     # Training settings
     seed: int = 42
@@ -24,11 +26,11 @@ class Config:
     epochs: int = 20
     
     # Early stopping settings
-    early_stopping_patience: int = 10
+    early_stopping_patience: int = 3
     early_stopping_min_delta: float = 0.001
     
     # Learning rate reduction on plateau
-    lr_reduce_patience: int = 5
+    lr_reduce_patience: int = 2
     lr_reduce_factor: float = 0.5
     lr_reduce_min_lr: float = 1e-7
     
@@ -43,19 +45,18 @@ class Config:
     wandb_run_name: str = None  # Will be auto-generated if None
     wandb_tags: list = None
     
-    # Model catalog
-    model_catalog: dict[str, int] = None
-
     def __post_init__(self):
-        if self.model_catalog is None:
-            self.model_catalog = {
-                'convnextv2_nano': self.img_size,
-                'convnextv2_tiny': self.img_size,
-                'convnextv2_base': self.img_size,
-                'convnextv2_large': self.img_size,
-                'convnextv2_huge': self.img_size,
-            }
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+
+    @property
+    def model_catalog(self) -> dict[str, int]:
+        return {
+            'convnextv2_nano': self.img_size,
+            'convnextv2_tiny': self.img_size,
+            'convnextv2_base': self.img_size,
+            'convnextv2_large': self.img_size,
+            'convnextv2_huge': self.img_size,
+        }
 
 
     def info(self) -> None:

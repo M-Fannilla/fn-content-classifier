@@ -177,6 +177,14 @@ def create_data_loaders(
         num_workers=config.num_workers,
         pin_memory=True
     )
+
+    print("Dataset loaded successfully!")
+    print(f"  Number of classes: {len(label_columns)}")
+    print(f"  Class names: {label_columns}")
+    print(f"  Training samples: {len(train_loader.dataset)}")
+    print(f"  Validation samples: {len(val_loader.dataset)}")
+    print(f"  Training batches: {len(train_loader)}")
+    print(f"  Validation batches: {len(val_loader)}")
     
     return (
         train_loader,
@@ -288,7 +296,7 @@ def plot_label_distribution(
     print("="*80)
     
     # Calculate and print stratification quality
-    print(f"\nSTRATIFICATION QUALITY:")
+    print("\nSTRATIFICATION QUALITY:")
     print(f"  Average absolute difference (Train vs Original): {np.mean(np.abs(train_percentages - original_percentages)):.2f}%")
     print(f"  Average absolute difference (Test vs Original): {np.mean(np.abs(test_percentages - original_percentages)):.2f}%")
     print(f"  Max absolute difference (Train vs Original): {np.max(np.abs(train_percentages - original_percentages)):.2f}%")
@@ -299,7 +307,7 @@ def plot_label_distribution(
     most_rare = np.argsort(original_imbalance)[:3]  # 3 most rare classes
     most_common = np.argsort(original_imbalance)[-3:]  # 3 most common classes
     
-    print(f"\nMOST IMBALANCED CLASSES:")
+    print("\nMOST IMBALANCED CLASSES:")
     print(f"  Most rare: {[label_columns[i] for i in most_rare]} "
           f"({[f'{original_imbalance[i]:.2f}%' for i in most_rare]})")
     print(f"  Most common: {[label_columns[i] for i in most_common]} "

@@ -1,12 +1,7 @@
-import os
-import random
-import numpy as np
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
-from typing import List, Tuple, Optional
-import torchvision.transforms as T
-from PIL import Image
+from typing import List, Tuple
 
 
 def visualize_predictions(
@@ -35,21 +30,19 @@ def visualize_predictions(
     # Move images to device
     test_images = test_images.to(device)
     
-    # Get random indices
-    total_samples = len(test_images)
-
     # Get predictions
     with torch.no_grad():
-        predictions = model(test_images[random_indices])
+        predictions = model(test_images)
         probabilities = torch.sigmoid(predictions)
         predicted_labels = (probabilities > threshold).float()
     
     # Move to CPU for visualization
-    test_images_cpu = test_images[random_indices].cpu()
-    true_labels_cpu = test_labels[random_indices].cpu()
+    test_images_cpu = test_images.cpu()
+    true_labels_cpu = test_labels.cpu()
     predicted_labels_cpu = predicted_labels.cpu()
     probabilities_cpu = probabilities.cpu()
     
+    num_samples = len(test_images_cpu)
     # Create subplots
     rows = (num_samples + 3) // 4  # 4 images per row
     cols = min(4, num_samples)
@@ -132,7 +125,7 @@ def visualize_predictions(
             correct_predictions += 1
     
     accuracy = correct_predictions / num_samples
-    print(f"\nPrediction Summary:")
+    print("\nPrediction Summary:")
     print(f"  Samples shown: {num_samples}")
     print(f"  Correct predictions: {correct_predictions}")
     print(f"  Accuracy: {accuracy:.2%}")
@@ -145,8 +138,6 @@ def visualize_predictions_from_dataloader(
     label_columns: List[str],
     threshold: float = 0.5,
     num_samples: int = 8,
-    figsize: Tuple[int, int] = (16, 12),
-    save_path: Optional[str] = None
 ) -> None:
     """Visualize model predictions from a DataLoader.
     
@@ -156,134 +147,23 @@ def visualize_predictions_from_dataloader(
         label_columns: List of class names
         threshold: Threshold for binary classification
         num_samples: Number of random samples to visualize
-        figsize: Figure size for the plot
-        save_path: Optional path to save the plot
     """
     # Collect all data from dataloader
-    all_images = []
-    all_labels = []
-    
-    for images, labels in dataloader:
-        all_images.append(images)
-        all_labels.append(labels)
-    
-    # Concatenate all batches
-    test_images = torch.cat(all_images, dim=0)
-    test_labels = torch.cat(all_labels, dim=0)
-    
-    # Use the main visualization function
+    dataset = iter(dataloader.dataset)
+
+    images, labels = [], []
+    for s in range(num_samples):
+        img, label = next(dataset)
+        images.append(img)
+        labels.append(label)
+
+    test_images = torch.stack(images, dim=0)
+    test_labels = torch.stack(labels, dim=0)
+
     visualize_predictions(
         model=model,
         test_images=test_images,
         test_labels=test_labels,
         label_columns=label_columns,
         threshold=threshold,
-        num_samples=num_samples,
-        figsize=figsize,
-        save_path=save_path
     )
-
-
-def get_prediction_confidence(
-    model: torch.nn.Module,
-    test_images: torch.Tensor,
-    label_columns: List[str],
-    threshold: float = 0.5
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Get prediction confidence scores for test images.
-    
-    Args:
-        model: Trained model
-        test_images: Tensor of test images (N, C, H, W)
-        label_columns: List of class names
-        threshold: Threshold for binary classification
-        
-    Returns:
-        Tuple of (predictions, probabilities, confidence_scores)
-    """
-    model.eval()
-    device = next(model.parameters()).device
-    
-    test_images = test_images.to(device)
-    
-    with torch.no_grad():
-        predictions = model(test_images)
-        probabilities = torch.sigmoid(predictions)
-        predicted_labels = (probabilities > threshold).float()
-    
-    # Calculate confidence as max probability for each sample
-    confidence_scores = probabilities.max(dim=1)[0].cpu().numpy()
-    
-    return (
-        predicted_labels.cpu().numpy(),
-        probabilities.cpu().numpy(),
-        confidence_scores
-    )
-
-
-def analyze_prediction_errors(
-    model: torch.nn.Module,
-    test_images: torch.Tensor,
-    test_labels: torch.Tensor,
-    label_columns: List[str],
-    threshold: float = 0.5,
-    top_k: int = 10
-) -> None:
-    """Analyze prediction errors and show most confident wrong predictions.
-    
-    Args:
-        model: Trained model
-        test_images: Tensor of test images (N, C, H, W)
-        test_labels: Tensor of true labels (N, num_classes)
-        label_columns: List of class names
-        threshold: Threshold for binary classification
-        top_k: Number of top errors to show
-    """
-    model.eval()
-    device = next(model.parameters()).device
-    
-    test_images = test_images.to(device)
-    
-    with torch.no_grad():
-        predictions = model(test_images)
-        probabilities = torch.sigmoid(predictions)
-        predicted_labels = (probabilities > threshold).float()
-    
-    # Move to CPU
-    test_images_cpu = test_images.cpu()
-    true_labels_cpu = test_labels.cpu()
-    predicted_labels_cpu = predicted_labels.cpu()
-    probabilities_cpu = probabilities.cpu()
-    
-    # Find incorrect predictions
-    correct_mask = torch.equal(true_labels_cpu, predicted_labels_cpu, dim=1)
-    incorrect_indices = torch.where(~correct_mask)[0]
-    
-    if len(incorrect_indices) == 0:
-        print("No incorrect predictions found!")
-        return
-    
-    # Get confidence scores for incorrect predictions
-    incorrect_confidences = probabilities_cpu[incorrect_indices].max(dim=1)[0]
-    
-    # Get top-k most confident wrong predictions
-    top_k = min(top_k, len(incorrect_indices))
-    top_errors = torch.topk(incorrect_confidences, top_k)
-    top_error_indices = incorrect_indices[top_errors.indices]
-    
-    print(f"Found {len(incorrect_indices)} incorrect predictions out of {len(test_images)} total.")
-    print(f"Showing top {top_k} most confident wrong predictions:\n")
-    
-    for i, idx in enumerate(top_error_indices):
-        true_labels = true_labels_cpu[idx]
-        pred_labels = predicted_labels_cpu[idx]
-        probs = probabilities_cpu[idx]
-        
-        true_classes = [label_columns[j] for j in range(len(label_columns)) if true_labels[j] == 1]
-        pred_classes = [label_columns[j] for j in range(len(label_columns)) if pred_labels[j] == 1]
-        
-        print(f"Error {i+1} (Sample {idx.item()}):")
-        print(f"  True: {', '.join(true_classes) if true_classes else 'None'}")
-        print(f"  Pred: {', '.join(pred_classes) if pred_classes else 'None'}")
-        print(f"  Confidence: {probs.max().item():.3f}")
-        print()

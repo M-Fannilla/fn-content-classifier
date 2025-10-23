@@ -105,14 +105,9 @@ class Trainer:
             self._init_wandb()
 
         components = [
-            str(time.time()),
+            self.config.model_type,
             self.config.model_name,
-            f"lr{self.config.learning_rate}",
-            f"bs{self.config.batch_size}",
-            f"sz{self.config.img_size}",
-            f"ep{self.config.epochs}",
-            f"lt{self.config.loss_type}",
-            f"cwm{self.config.class_weight_method}thr{self.config.threshold}",
+            f"is{self.config.img_size}",
         ]
         self.best_model_name = "_".join(components) + ".pth"
     
@@ -243,15 +238,6 @@ class Trainer:
     
     def train(self) -> dict[str, list[float]]:
         """Main training loop with early stopping and learning rate reduction."""
-        print(f"Starting finetuning for {self.config.epochs} epochs...")
-        print(f"Model: {self.config.model_name}")
-        print(f"Learning rate: {self.config.learning_rate}")
-        print(f"Device: {self.device}")
-        print(f"Loss function: {self.config.loss_type}")
-        print(f"Class weight method: {self.config.class_weight_method}")
-        print(f"Early stopping patience: {self.config.early_stopping_patience}")
-        print(f"LR reduction patience: {self.config.lr_reduce_patience}")
-        print("-" * 50)
         
         for epoch in range(self.config.epochs):
             start_time = time.time()
@@ -332,11 +318,10 @@ class Trainer:
                 print(f"Best F1 Micro: {self.best_val_f1:.4f}")
                 print(f"No improvement for {self.config.early_stopping_patience} epochs.")
                 break
-        
+
         # Load best model
-        if self.best_model_state is not None:
-            self.model.load_state_dict(self.best_model_state)
-            print(f"\nLoaded best model with F1 Micro: {self.best_val_f1:.4f}")
+        self.model.load_state_dict(self.best_model_state)
+        print(f"\nLoaded best model with F1 Micro: {self.best_val_f1:.4f}")
         
         # Finish wandb run
         if self.config.use_wandb:
@@ -395,19 +380,43 @@ class Trainer:
         if os.path.dirname(path):
             os.makedirs(os.path.dirname(path), exist_ok=True)
         
-        # Use best model state if available, otherwise current model state
-        model_state = self.best_model_state if self.best_model_state is not None else self.model.state_dict()
-        
-        torch.save({
-            'model_state_dict': model_state,
-            'config': self.config,
-            'label_columns': self.label_columns,
-            'history': self.history,
-            'best_val_f1': self.best_val_f1
-        }, path)
+        self._save_onnx(filename=path + '.onnx')
+        self._save_tensorrt(filename=path + '.ts')
         
         print(f"Model saved to {path}")
-    
+
+    def _save_onnx(self, filename: str = "convnextv2_finetuned.onnx"):
+        dummy_input = torch.randn(1, 3, self.config.img_size, self.config.img_size).cuda()  # replace H,W with your input size, e.g., 512,512
+        torch.onnx.export(
+            self.model,
+            dummy_input,
+            filename,
+            export_params=True,
+            opset_version=17,
+            do_constant_folding=True,
+            input_names=["input"],
+            output_names=["output"],
+            dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
+        )
+        print(f"Saved ONNX model to {filename}")
+
+    def _save_tensorrt(self, filename: str = "convnextv2_finetuned.ts"):
+        # assuming model is already on cuda, eval mode
+        import torch_tensorrt
+        inputs = [
+            torch_tensorrt.Input((1, 3, self.config.img_size, self.config.img_size), dtype=torch.float32)
+        ]  # specify shape & dtype
+
+        trt_ts_module = torch_tensorrt.compile(
+            self.model,
+            inputs=inputs,
+            enabled_precisions={torch_tensorrt.dtype.f16},
+        )
+
+        # Save the optimized module
+        trt_ts_module.save(filename)
+        print(f"Saved TensorRT model to {filename}")
+
     def load_model(self, path: str):
         """Load a trained model."""
         checkpoint = torch.load(path, map_location=self.device)
@@ -418,3 +427,22 @@ class Trainer:
         
         print(f"Model loaded from {path}")
         print(f"Best validation F1: {self.best_val_f1:.4f}")
+
+    def info(self):
+        print(f"Starting finetuning for {self.config.epochs} epochs...")
+        print(f"  Model: {self.config.model_name}")
+        print(f"  Learning rate: {self.config.learning_rate}")
+
+        print(f"  Loss function: {self.config.loss_type}")
+        print(f"  Class weight method: {self.config.class_weight_method}")
+        print(f"  Optimizer: AdamW (lr={self.config.learning_rate})")
+
+        print(f"  Early stopping patience: {self.config.early_stopping_patience}")
+        print(f"  LR reduction patience: {self.config.lr_reduce_patience}")
+        print(f"  Device: {self.device}")
+
+        print(f"  Scheduler: ReduceLROnPlateau (patience={self.config.lr_reduce_patience})")
+        print(f"  Early stopping: Enabled (patience={self.config.early_stopping_patience})")
+        print("  Mixed precision: Enabled")
+        print(f"  Threshold: {self.config.threshold}")
+        print("-" * 50)

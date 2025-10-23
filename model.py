@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import timm
 from config import Config
@@ -40,13 +41,25 @@ def create_model(config: Config, num_classes: int) -> ConvNeXtV2MultilabelClassi
 
 def setup_model_for_training(
         model: ConvNeXtV2MultilabelClassifier,
-        config: Config
+        device: torch.device
 ) -> ConvNeXtV2MultilabelClassifier:
     """Setup model for finetuning (freeze backbone, train classifier only)."""
 
     for name, param in model.backbone.named_parameters():
         if "head" not in name and "classifier" not in name and "fc" not in name:
             param.requires_grad = False
+
+    # Count parameters
+    param_counts = count_parameters(model)
+    print(f"Model created successfully!")
+    print(f"  Total parameters: {param_counts['total']:,}")
+    print(f"  Trainable parameters: {param_counts['trainable']:,}")
+    print(f"  Frozen parameters: {param_counts['frozen']:,}")
+    print(f"  Training mode: Finetuning (backbone frozen, classifier trainable)")
+
+    # Move model to device
+    model = model.to(device)
+    print(f"  Model moved to: {device}")
 
     return model
 
