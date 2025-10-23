@@ -387,7 +387,7 @@ class Trainer:
 
     def _save_pytorch(self, filename: str = "convnextv2_finetuned.pth"):
         torch.save({
-            'model_state_dict': self.model.state_dict(),
+            'model_state_dict': self.model.backbone.state_dict(),
             'labels_columns': self.label_columns,
             'image_size': self.config.img_size,
         }, filename)
@@ -396,7 +396,7 @@ class Trainer:
     def load_model(self, path: str):
         """Load a trained model."""
         checkpoint = torch.load(path, map_location=self.device)
-        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.model.backbone.load_state_dict(checkpoint['model_state_dict'])
         print(f"Model loaded from {path}")
 
     def info(self):
