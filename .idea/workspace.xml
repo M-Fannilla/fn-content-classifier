@@ -7,20 +7,17 @@
     <list default="true" id="351f5b4d-6b0f-4a16-9b02-7bebd60c78c0" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/../lottery/service/models/__init__.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/models/postgres.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/notify/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/notify/mail.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/__init__.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/postgres.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/model_train.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/label_distribution.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +122,7 @@
       <workItem from="1761075354045" duration="10363000" />
       <workItem from="1761202648483" duration="1720000" />
       <workItem from="1761204869700" duration="56000" />
-      <workItem from="1761204940758" duration="2325000" />
+      <workItem from="1761204940758" duration="6561000" />
     </task>
     <servers />
   </component>

@@ -91,7 +91,7 @@ def train_with_sweep():
 
         # Create model
         model = create_model(sweep_config, num_classes=len(label_columns))
-        model = setup_model_for_training(model, sweep_config)
+        model = setup_model_for_training(model, device=device)
         model = model.to(device)
 
         # Create trainer

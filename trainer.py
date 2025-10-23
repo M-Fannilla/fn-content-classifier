@@ -107,9 +107,8 @@ class Trainer:
         components = [
             self.config.model_type,
             self.config.model_name,
-            f"is{self.config.img_size}",
         ]
-        self.best_model_name = "_".join(components) + ".pth"
+        self.best_model_name = "_".join(components)
     
     def _init_wandb(self):
         """Initialize Weights & Biases logging."""
@@ -144,10 +143,10 @@ class Trainer:
                 'device': str(self.device)
             }
         )
-        
+
         # Log model architecture
-        wandb.watch(self.model, log="all", log_freq=100)
-        
+        # wandb.watch(self.model, log="all", log_freq=100)
+
     def _log_metrics(self, metrics: dict[str, float], epoch: int, prefix: str = ""):
         """Log metrics to wandb."""
         if self.config.use_wandb:
@@ -155,13 +154,13 @@ class Trainer:
             log_dict['epoch'] = epoch
             wandb.log(log_dict)
         
-    def train_epoch(self) -> float:
+    def train_epoch(self, epoch: int) -> float:
         """Train for one epoch."""
         self.model.train()
         total_loss = 0.0
         num_batches = 0
         
-        pbar = tqdm(self.train_loader, desc='Training')
+        pbar = tqdm(self.train_loader, desc=f'Training Epoch {epoch}')
         
         for batch_idx, (images, labels) in enumerate(pbar):
             images = images.to(self.device, non_blocking=True)
@@ -243,7 +242,7 @@ class Trainer:
             start_time = time.time()
             
             # Training
-            train_loss = self.train_epoch()
+            train_loss = self.train_epoch(epoch=epoch)
             
             # Validation
             val_loss, val_metrics = self.validate_epoch()
@@ -286,10 +285,7 @@ class Trainer:
                 self.best_val_f1 = current_f1
                 self.best_model_state = self.model.state_dict().copy()
                 print(f"  → New best F1 Micro: {current_f1:.4f}")
-                
-                # Save the best model
-                self.save_model(self.best_model_name)
-            
+
             # Early stopping check
             if current_f1 > self.best_val_f1_for_early_stopping + self.config.early_stopping_min_delta:
                 self.best_val_f1_for_early_stopping = current_f1
@@ -322,7 +318,10 @@ class Trainer:
         # Load best model
         self.model.load_state_dict(self.best_model_state)
         print(f"\nLoaded best model with F1 Micro: {self.best_val_f1:.4f}")
-        
+
+        # Save the best model
+        self.save_model(self.best_model_name)
+
         # Finish wandb run
         if self.config.use_wandb:
             wandb.finish()
@@ -377,56 +376,28 @@ class Trainer:
     def save_model(self, path: str):
         """Save the trained model."""
         # Create directory if it doesn't exist
-        if os.path.dirname(path):
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-        
-        self._save_onnx(filename=path + '.onnx')
-        self._save_tensorrt(filename=path + '.ts')
+        model_path = f"./{self.config.output_dir}/{path}"
+
+        if os.path.dirname(model_path):
+            os.makedirs(os.path.dirname(model_path), exist_ok=True)
+
+        self._save_pytorch(filename=model_path + ".pth")
         
         print(f"Model saved to {path}")
 
-    def _save_onnx(self, filename: str = "convnextv2_finetuned.onnx"):
-        dummy_input = torch.randn(1, 3, self.config.img_size, self.config.img_size).cuda()  # replace H,W with your input size, e.g., 512,512
-        torch.onnx.export(
-            self.model,
-            dummy_input,
-            filename,
-            export_params=True,
-            opset_version=17,
-            do_constant_folding=True,
-            input_names=["input"],
-            output_names=["output"],
-            dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
-        )
-        print(f"Saved ONNX model to {filename}")
-
-    def _save_tensorrt(self, filename: str = "convnextv2_finetuned.ts"):
-        # assuming model is already on cuda, eval mode
-        import torch_tensorrt
-        inputs = [
-            torch_tensorrt.Input((1, 3, self.config.img_size, self.config.img_size), dtype=torch.float32)
-        ]  # specify shape & dtype
-
-        trt_ts_module = torch_tensorrt.compile(
-            self.model,
-            inputs=inputs,
-            enabled_precisions={torch_tensorrt.dtype.f16},
-        )
-
-        # Save the optimized module
-        trt_ts_module.save(filename)
-        print(f"Saved TensorRT model to {filename}")
+    def _save_pytorch(self, filename: str = "convnextv2_finetuned.pth"):
+        torch.save({
+            'model_state_dict': self.model.state_dict(),
+            'labels_columns': self.label_columns,
+            'image_size': self.config.img_size,
+        }, filename)
+        print(f"Saved PyTorch model to {filename}")
 
     def load_model(self, path: str):
         """Load a trained model."""
         checkpoint = torch.load(path, map_location=self.device)
-        
         self.model.load_state_dict(checkpoint['model_state_dict'])
-        self.history = checkpoint['history']
-        self.best_val_f1 = checkpoint['best_val_f1']
-        
         print(f"Model loaded from {path}")
-        print(f"Best validation F1: {self.best_val_f1:.4f}")
 
     def info(self):
         print(f"Starting finetuning for {self.config.epochs} epochs...")

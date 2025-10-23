@@ -1,12 +1,13 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 
 @dataclass
 class Config:
     # Dataset settings
-    model_type: str = 'action'
+    model_type: Literal['action', 'bodyparts', 'positions'] = 'action'
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
 
@@ -18,7 +19,7 @@ class Config:
     seed: int = 42
     batch_size: int = 32
     num_workers: int = os.cpu_count() // 2
-    threshold: float = 0.5
+    threshold: float = 0.4 # 0.5 is fine but 0.4 seems to work better for this task
     img_size: int = 224
     model_name: str = 'convnextv2_tiny'
     # Finetuning settings
@@ -35,8 +36,8 @@ class Config:
     lr_reduce_min_lr: float = 1e-7
     
     # Class imbalance handling
-    class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none
-    loss_type: str = 'focal'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
+    class_weight_method: Literal['inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none'] = 'inverse_freq'
+    loss_type: Literal['focal', 'asymmetric', 'weighted_bce', 'bce'] = 'focal'
     
     # Weights & Biases settings
     use_wandb: bool = False
