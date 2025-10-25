@@ -24,7 +24,7 @@ def run_sweep():
         print(f"Using existing sweep ID: {sweep_id}")
 
     # Run the sweep
-    wandb.agent(sweep_id, function=train_with_sweep, count=50)  # Run 50 trials
+    wandb.agent(sweep_id, function=train_with_sweep, count=50, entity=entity, project=project)  # Run 50 trials
 
 def train_with_sweep():
     """Training function for wandb sweep."""
