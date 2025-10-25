@@ -2,3 +2,4 @@ fn-content-dataset/
 venv/
 __pycache__/
 .idea/
+models/

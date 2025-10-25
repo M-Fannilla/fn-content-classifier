@@ -1,23 +1,25 @@
 program: model_train.ipynb
 method: bayes
 metric:
-  name: val_f1_micro
+  name: pr_auc_macro
   goal: maximize
 parameters:
-  model_name:
-    values: [ "convnextv2_nano", "convnextv2_tiny" ]
+  # model_name:
+  #   values: [ "convnextv2_nano", "convnextv2_tiny" ]
   learning_rate:
     distribution: log_uniform_values
     min: 1e-6
     max: 1e-3
   batch_size:
-    values: [ 32, 64, 128 ]
-  img_size:
-    values: [ 224, 384 ]
-  # Class imbalance handling
-  class_weight_method:
-    values: [ "inverse_freq", "balanced", "sqrt_inverse_freq", "none" ]
-  loss_type:
-    values: [ "focal", "asymmetric", "weighted_bce" ]
-  use_wandb:
-    value: true  # Always use wandb for sweeps
+    values: [ 32, 64 ]
+  # loss config
+  bce_power:
+    distribution: log_uniform_values
+    min: 0.0
+    max: 1.0
+  tau_logit_adjust:
+    distribution: log_uniform_values
+    min: 0.0
+    max: 1.0
+  lr_reduce_patience:
+    values: [ 1, 2, 3 ]

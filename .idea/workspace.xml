@@ -9,16 +9,20 @@
       <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/inference.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/main.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model_export.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model_inference.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/models/postgres.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lottery/service/repositories/postgres.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/onnx/action_convnextv2_nano_32_384.onnx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/onnx/bodyparts_convnextv2_nano_32_384.onnx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_inference.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/model_train.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wandb_sweep_config.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +55,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/milosz/Projects/Fannilla/Jobs/ContentClassifier",
+    "last_opened_file_path": "/Users/milosz/Projects/fn-poc-classifier",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -63,20 +67,25 @@
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Jupyter",
       "Python"
     ]
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/models" />
+      <recent name="$PROJECT_DIR$/../lottery/service" />
+      <recent name="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/onnx" />
+      <recent name="$PROJECT_DIR$/../lottery/service" />
       <recent name="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.model_convert">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="fn-poc-classifier" />
       <option name="ENV_FILES" value="" />
@@ -100,6 +109,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="model_convert" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="fn-poc-classifier" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/model_convert.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.model_convert" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -127,7 +164,13 @@
       <workItem from="1761075354045" duration="10363000" />
       <workItem from="1761202648483" duration="1720000" />
       <workItem from="1761204869700" duration="56000" />
-      <workItem from="1761204940758" duration="14547000" />
+      <workItem from="1761204940758" duration="23631000" />
+      <workItem from="1761242142201" duration="33000" />
+      <workItem from="1761288939764" duration="640000" />
+      <workItem from="1761290339821" duration="3870000" />
+      <workItem from="1761332118697" duration="2460000" />
+      <workItem from="1761334674295" duration="1298000" />
+      <workItem from="1761413176947" duration="10022000" />
     </task>
     <servers />
   </component>

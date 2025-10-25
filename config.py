@@ -2,6 +2,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from timm.models import PretrainedCfg
+
 
 @dataclass
 class Config:
@@ -19,11 +21,13 @@ class Config:
     batch_size: int = 32
     num_workers: int = os.cpu_count() // 2
     threshold: float = 0.4
-    img_size: int = 224
+    img_size: int = 384
     model_name: str = 'convnextv2_tiny'
+
     # Finetuning settings
+    weight_decay: float = 1e-4
     learning_rate: float = 1e-4
-    epochs: int = 6
+    epochs: int = 10
 
     # Early stopping settings
     early_stopping_patience: int = 3
@@ -35,15 +39,24 @@ class Config:
     lr_reduce_min_lr: float = 1e-7
 
     # Class imbalance handling
+    bce_power: float = 0.5
+    tau_logit_adjust: float = 0.5
     class_weight_method: str = 'inverse_freq'  # 'inverse_freq', 'balanced', 'sqrt_inverse_freq', 'none
-    loss_type: str = 'focal'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
+    loss_type: str = 'weighted_bce'  # 'focal', 'asymmetric', 'weighted_bce', 'bce'
 
     # Weights & Biases settings
-    use_wandb: bool = False
+    use_wandb: bool = True
     wandb_project: str = 'fn-content-classifier'
     wandb_entity: str = 'miloszbertman'  # Set to your wandb username/team
     wandb_run_name: str = None  # Will be auto-generated if None
     wandb_tags: list = None
+
+    # Model settings
+    reduce_metric: str = 'pr_auc_macro'
+    early_stop_metric: str = 'pr_auc_macro'
+    best_model_metric: str = "pr_auc_macro"
+
+    pretrained: bool = True
 
     def __post_init__(self):
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)

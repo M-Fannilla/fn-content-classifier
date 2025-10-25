@@ -12,7 +12,7 @@ from config import Config
 
 class MultilabelImageDataset(Dataset):
     """Dataset for multilabel image classification with stratified splitting."""
-    
+
     def __init__(
             self,
             image_paths: list[str],
@@ -24,14 +24,14 @@ class MultilabelImageDataset(Dataset):
         self.labels = labels
         self.transform = transform
         self.config = config
-        
+
     def __len__(self):
         return len(self.image_paths)
-    
+
     def __getitem__(self, idx):
         image_path = self.image_paths[idx]
         label = self.labels[idx]
-        
+
         # Load image
         try:
             image = Image.open(image_path).convert('RGB')
@@ -43,10 +43,10 @@ class MultilabelImageDataset(Dataset):
                 (self.config.img_size, self.config.img_size),
                 (0, 0, 0)
             )
-        
+
         if self.transform:
             image = self.transform(image)
-            
+
         return image, torch.FloatTensor(label)
 
 
@@ -79,10 +79,10 @@ def load_and_prepare_data(
     # Get label columns (all except file_name)
     label_columns = [col for col in df.columns if col != 'file_name']
     labels = df[label_columns].values.astype(np.float32)
-    
+
     # Create image paths
     image_paths = [os.path.join(config.dataset_src, filename) for filename in df['file_name']]
-    
+
     return df, image_paths, labels
 
 
@@ -92,30 +92,48 @@ def create_stratified_splits(
         config: Config
 ) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
     """Create stratified train/test splits for multilabel data."""
-    
+
     # Use MultilabelStratifiedKFold for proper stratification
     mlsf = MultilabelStratifiedKFold(
         n_splits=5,
         shuffle=True,
         random_state=config.seed
     )
-    
+
     # Get the first split for train/test
     train_idx, test_idx = next(mlsf.split(image_paths, labels))
-    
+
     train_paths = [image_paths[i] for i in train_idx]
     test_paths = [image_paths[i] for i in test_idx]
     train_labels = labels[train_idx]
     test_labels = labels[test_idx]
-    
+
+    return train_paths, test_paths, train_labels, test_labels
+
+def create_stratified_splits_dummy(
+        image_paths: list[str],
+        labels: np.ndarray,
+        config: Config
+) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
+    TOTAL = 1000
+    image_paths = image_paths[:TOTAL]
+    labels = labels[:TOTAL]
+
+    break_point = int(TOTAL * 0.8)
+
+    train_paths = image_paths[:break_point]
+    test_paths = image_paths[break_point:]
+    train_labels = labels[:break_point]
+    test_labels = labels[break_point:]
+
     return train_paths, test_paths, train_labels, test_labels
 
 
 def create_data_loaders(
-        config: Config
+        df, image_paths, labels, config: Config
 ) -> tuple[DataLoader, DataLoader, list[str], np.ndarray, np.ndarray, np.ndarray]:
     """Create train and validation data loaders.
-    
+
     Returns:
         train_loader: Training data loader
         val_loader: Validation data loader
@@ -124,19 +142,16 @@ def create_data_loaders(
         train_labels: Training dataset labels
         test_labels: Test dataset labels
     """
-    # Load data
-    df, image_paths, labels = load_and_prepare_data(config=config)
-    
     # Create stratified splits
     train_paths, test_paths, train_labels, test_labels = create_stratified_splits(
         image_paths=image_paths,
         labels=labels,
         config=config
     )
-    
+
     # Get label columns for later use
     label_columns = [col for col in df.columns if col != 'file_name']
-    
+
     # Create transforms
     train_transform = get_transforms(
         config=config,
@@ -146,7 +161,7 @@ def create_data_loaders(
         config=config,
         is_training=False
     )
-    
+
     # Create datasets
     train_dataset = MultilabelImageDataset(
         image_paths=train_paths,
@@ -160,7 +175,7 @@ def create_data_loaders(
         transform=val_transform,
         config=config
     )
-    
+
     # Create data loaders
     train_loader = DataLoader(
         train_dataset,
@@ -169,7 +184,7 @@ def create_data_loaders(
         num_workers=config.num_workers,
         pin_memory=True
     )
-    
+
     val_loader = DataLoader(
         val_dataset,
         batch_size=config.batch_size,
@@ -185,7 +200,7 @@ def create_data_loaders(
     print(f"  Validation samples: {len(val_loader.dataset)}")
     print(f"  Training batches: {len(train_loader)}")
     print(f"  Validation batches: {len(val_loader)}")
-    
+
     return (
         train_loader,
         val_loader,
@@ -204,7 +219,7 @@ def plot_label_distribution(
         save_path: str = None
 ) -> None:
     """Plot label distribution comparison between original, train, and test datasets.
-    
+
     Args:
         original_labels: Original dataset labels (n_samples, n_classes)
         train_labels: Training dataset labels (n_train, n_classes)
@@ -216,29 +231,29 @@ def plot_label_distribution(
     original_counts = original_labels.sum(axis=0)
     train_counts = train_labels.sum(axis=0)
     test_counts = test_labels.sum(axis=0)
-    
+
     # Calculate total samples
     n_original = len(original_labels)
     n_train = len(train_labels)
     n_test = len(test_labels)
-    
+
     # Calculate percentages
     original_percentages = (original_counts / n_original) * 100
     train_percentages = (train_counts / n_train) * 100
     test_percentages = (test_counts / n_test) * 100
-    
+
     # Create figure with subplots
     n_classes = len(label_columns)
     fig, axes = plt.subplots(2, 1, figsize=(16, 12))
-    
+
     # Plot 1: Absolute counts
     x = np.arange(n_classes)
     width = 0.25
-    
+
     axes[0].bar(x - width, original_counts, width, label='Original', color='blue', alpha=0.7)
     axes[0].bar(x, train_counts, width, label='Train', color='green', alpha=0.7)
     axes[0].bar(x + width, test_counts, width, label='Test', color='orange', alpha=0.7)
-    
+
     axes[0].set_xlabel('Classes')
     axes[0].set_ylabel('Positive Sample Count')
     axes[0].set_title('Label Distribution: Absolute Counts')
@@ -246,12 +261,12 @@ def plot_label_distribution(
     axes[0].set_xticklabels(label_columns, rotation=45, ha='right')
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
-    
+
     # Plot 2: Percentages
     axes[1].bar(x - width, original_percentages, width, label='Original', color='blue', alpha=0.7)
     axes[1].bar(x, train_percentages, width, label='Train', color='green', alpha=0.7)
     axes[1].bar(x + width, test_percentages, width, label='Test', color='orange', alpha=0.7)
-    
+
     axes[1].set_xlabel('Classes')
     axes[1].set_ylabel('Positive Sample Percentage (%)')
     axes[1].set_title('Label Distribution: Percentages')
@@ -259,54 +274,54 @@ def plot_label_distribution(
     axes[1].set_xticklabels(label_columns, rotation=45, ha='right')
     axes[1].legend()
     axes[1].grid(True, alpha=0.3)
-    
+
     # Add summary statistics
     fig.suptitle(f'Dataset Split Analysis\n'
-                f'Original: {n_original:,} samples | '
-                f'Train: {n_train:,} samples ({n_train/n_original*100:.1f}%) | '
-                f'Test: {n_test:,} samples ({n_test/n_original*100:.1f}%)', 
-                fontsize=14, fontweight='bold')
-    
+                 f'Original: {n_original:,} samples | '
+                 f'Train: {n_train:,} samples ({n_train/n_original*100:.1f}%) | '
+                 f'Test: {n_test:,} samples ({n_test/n_original*100:.1f}%)',
+                 fontsize=14, fontweight='bold')
+
     plt.tight_layout()
-    
+
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Label distribution plot saved to: {save_path}")
-    
+
     plt.show()
-    
+
     # Print detailed statistics
     print("\n" + "="*80)
     print("DETAILED LABEL DISTRIBUTION ANALYSIS")
     print("="*80)
     print(f"{'Class':<20} {'Original':<12} {'Train':<12} {'Test':<12} {'Train%':<8} {'Test%':<8}")
     print("-"*80)
-    
+
     for i, class_name in enumerate(label_columns):
         orig_pct = original_percentages[i]
         train_pct = train_percentages[i]
         test_pct = test_percentages[i]
-        
+
         print(f"{class_name:<20} {original_counts[i]:<12} {train_counts[i]:<12} {test_counts[i]:<12} "
               f"{train_pct:<8.2f} {test_pct:<8.2f}")
-    
+
     print("-"*80)
     print(f"{'TOTAL':<20} {n_original:<12} {n_train:<12} {n_test:<12} "
           f"{n_train/n_original*100:<8.1f} {n_test/n_original*100:<8.1f}")
     print("="*80)
-    
+
     # Calculate and print stratification quality
     print("\nSTRATIFICATION QUALITY:")
     print(f"  Average absolute difference (Train vs Original): {np.mean(np.abs(train_percentages - original_percentages)):.2f}%")
     print(f"  Average absolute difference (Test vs Original): {np.mean(np.abs(test_percentages - original_percentages)):.2f}%")
     print(f"  Max absolute difference (Train vs Original): {np.max(np.abs(train_percentages - original_percentages)):.2f}%")
     print(f"  Max absolute difference (Test vs Original): {np.max(np.abs(test_percentages - original_percentages)):.2f}%")
-    
+
     # Identify most imbalanced classes
     original_imbalance = original_percentages
     most_rare = np.argsort(original_imbalance)[:3]  # 3 most rare classes
     most_common = np.argsort(original_imbalance)[-3:]  # 3 most common classes
-    
+
     print("\nMOST IMBALANCED CLASSES:")
     print(f"  Most rare: {[label_columns[i] for i in most_rare]} "
           f"({[f'{original_imbalance[i]:.2f}%' for i in most_rare]})")

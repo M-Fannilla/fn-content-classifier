@@ -11,10 +11,32 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 
 
+def find_best_thresholds(y_true: np.ndarray, y_prob: np.ndarray) -> np.ndarray:
+    """
+    Find optimal thresholds for each class using F1 score optimization.
+    
+    Args:
+        y_true: Ground truth binary labels (n_samples, n_classes)
+        y_prob: Predicted probabilities (n_samples, n_classes)
+    
+    Returns:
+        Array of optimal thresholds for each class (n_classes,)
+    """
+    thresholds = []
+    for i in range(y_true.shape[1]):
+        best_thr, best_f1 = 0.5, 0
+        for thr in np.linspace(0.05, 0.95, 19):
+            f1 = f1_score(y_true[:, i], (y_prob[:, i] > thr).astype(int))
+            if f1 > best_f1:
+                best_f1, best_thr = f1, thr
+        thresholds.append(best_thr)
+    return np.array(thresholds)
+
+
 class MultilabelMetrics:
     """Class for computing multilabel classification metrics."""
     
-    def __init__(self, threshold: float = 0.5):
+    def __init__(self, threshold: float | np.ndarray = 0.5):
         self.threshold = threshold
         
     def compute_metrics(
@@ -28,7 +50,7 @@ class MultilabelMetrics:
         metrics = {}
         
         # Convert predictions to binary using threshold
-        y_pred_binary = (y_pred > self.threshold).astype(int)
+        y_pred_binary = (y_pred >= self.threshold).astype(np.int32)
         
         # Micro-averaged metrics
         metrics['f1_micro'] = f1_score(y_true, y_pred_binary, average='micro', zero_division=0)
@@ -74,7 +96,7 @@ class MultilabelMetrics:
     ) -> dict[str, dict[str, float]]:
         """Compute per-class metrics."""
         
-        y_pred_binary = (y_pred > self.threshold).astype(int)
+        y_pred_binary = (y_pred >= self.threshold).astype(np.int32)
         num_classes = y_true.shape[1]
         
         per_class_metrics = {}

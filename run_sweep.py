@@ -15,25 +15,13 @@ def run_sweep():
     
     # Initialize wandb sweep
     sweep_id = input("Input the sweep_id (or press Enter to create new): ").strip()
-    
-    if not sweep_id:
-        # Create new sweep
-        sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
-        print(f"New sweep created with ID: {sweep_id}")
-    else:
-        # Validate existing sweep
-        try:
-            # Try to get sweep info to validate it exists
-            api = wandb.Api()
-            sweep = api.sweep(f"{entity}/{project}/{sweep_id}")
-            print(f"Using existing sweep with ID: {sweep_id}")
-        except Exception as e:
-            print(f"Error accessing sweep {sweep_id}: {e}")
-            print("Creating new sweep instead...")
-            sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
-            print(f"New sweep created with ID: {sweep_id}")
 
-    print(f"Sweep URL: https://wandb.ai/sweeps/{sweep_id}")
+    if not sweep_id:
+        # Create a new sweep
+        sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
+        print(f"Created new sweep with ID: {sweep_id}")
+    else:
+        print(f"Using existing sweep ID: {sweep_id}")
 
     # Run the sweep
     wandb.agent(sweep_id, function=train_with_sweep, count=50)  # Run 50 trials
@@ -59,12 +47,12 @@ def train_with_sweep():
     from config import Config
 
     sweep_config = Config(
-        model_name=config.model_name,
+        model_name="convnextv2_tiny",
         learning_rate=config.learning_rate,
         batch_size=config.batch_size,
-        img_size=config.img_size,
-        class_weight_method=config.class_weight_method,
-        loss_type=config.loss_type,
+        bce_power=config.bce_power,
+        tau_logit_adjust=config.tau_logit_adjust,
+        lr_reduce_patience=config.lr_reduce_patience,
         use_wandb=True,
         wandb_project="fn-content-classifier",
         wandb_entity="miloszbertman",
@@ -72,26 +60,38 @@ def train_with_sweep():
     )
 
     # Import training modules
-    from dataset import create_data_loaders
+    from dataset import create_data_loaders, load_and_prepare_data
     from model import create_model, setup_model_for_training
     from trainer import Trainer
     import torch
+    from utils import compute_class_frequency
 
     # Set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     try:
+        df, image_paths, labels = load_and_prepare_data(config=sweep_config)
         # Create data loaders
-        train_loader, val_loader, label_columns, _, _, _ = create_data_loaders(sweep_config)
+        class_frequency = compute_class_frequency(df.drop(["file_name"], axis=1))
+        (
+            train_loader,
+            val_loader,
+            label_columns,
+            original_labels,
+            train_labels,
+            test_labels
+        ) = create_data_loaders(df, image_paths, labels, sweep_config)
 
         # Create model
         model = create_model(sweep_config, num_classes=len(label_columns))
-        model = setup_model_for_training(model, device=device)
+        model = setup_model_for_training(
+            sweep_config, model, class_freq=class_frequency, device=device
+        )
         model = model.to(device)
 
-        # Create trainer
         trainer = Trainer(
             model=model,
+            class_freq=class_frequency,
             config=sweep_config,
             train_loader=train_loader,
             val_loader=val_loader,
