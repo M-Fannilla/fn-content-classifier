@@ -2,11 +2,12 @@
 
 # Variables
 PROJECT_ID := fannilla-dev
-REGION := europe-west1
+REGION := europe
 REPOSITORY := shared-repository
 IMAGE_NAME := content-classifier
 TAG := training
 REGISTRY := $(REGION)-docker.pkg.dev
+# europe-docker.pkg.dev/fannilla-dev/shared-repository
 FULL_IMAGE_NAME := $(REGISTRY)/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$(TAG)
 LATEST_IMAGE_NAME := $(REGISTRY)/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):latest
 
@@ -48,9 +49,9 @@ tag:
 # Push the Docker image to Artifact Registry
 push: tag
 	@echo "Pushing Docker image to Artifact Registry..."
-	docker push $(FULL_IMAGE_NAME)
+	docker push $(LATEST_IMAGE_NAME)
 	@echo "Push complete!"
-	@echo "Image available at: $(FULL_IMAGE_NAME)"
+	@echo "Image available at: $(LATEST_IMAGE_NAME)"
 
 # Build and push in one command
 build-and-push: build push
