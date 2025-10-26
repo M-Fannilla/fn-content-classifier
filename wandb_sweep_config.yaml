@@ -1,8 +1,14 @@
 program: model_train.ipynb
 method: bayes
 metric:
-  name: pr_auc_macro
+  name: best_pr_auc_macro
   goal: maximize
+early_terminate:
+  type: hyperband
+  min_iter: 3     # check after epoch 3
+  max_iter: 10    # your full number of epochs
+  eta: 2          # kill ~50% of weak configs
+  strict: true    # allow aggressive termination
 parameters:
   # model_name:
   #   values: [ "convnextv2_nano", "convnextv2_tiny" ]
@@ -11,14 +17,18 @@ parameters:
     min: 1e-6
     max: 1e-3
   batch_size:
-    values: [ 32, 64 ]
+    values: [ 16, 24, 32 ]
   # loss config
   bce_power:
-    distribution: log_uniform_values
+    distribution: uniform
     min: 0.0
     max: 1.0
   tau_logit_adjust:
-    distribution: log_uniform_values
+    distribution: uniform
+    min: 0.0
+    max: 1.0
+  weight_decay:
+    distribution: uniform
     min: 0.0
     max: 1.0
   lr_reduce_patience:

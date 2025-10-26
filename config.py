@@ -27,7 +27,7 @@ class Config:
     # Finetuning settings
     weight_decay: float = 1e-4
     learning_rate: float = 1e-4
-    epochs: int = 10
+    epochs: int = 6
 
     # Early stopping settings
     early_stopping_patience: int = 3
