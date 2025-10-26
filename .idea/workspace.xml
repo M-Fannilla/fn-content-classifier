@@ -11,9 +11,7 @@
       <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wandb_sweep_config.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +159,7 @@
       <workItem from="1761290339821" duration="3870000" />
       <workItem from="1761332118697" duration="2460000" />
       <workItem from="1761334674295" duration="1298000" />
-      <workItem from="1761413176947" duration="12248000" />
+      <workItem from="1761413176947" duration="12896000" />
     </task>
     <servers />
   </component>

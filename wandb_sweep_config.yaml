@@ -18,7 +18,6 @@ parameters:
     max: 1e-3
   batch_size:
     values: [ 16, 24, 32 ]
-  # loss config
   bce_power:
     distribution: uniform
     min: 0.0

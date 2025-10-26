@@ -1,3 +1,4 @@
+import os
 import sys
 import yaml
 import wandb
@@ -14,17 +15,21 @@ def run_sweep():
     project = sweep_config.get('wandb_project', 'fn-content-classifier')
     
     # Initialize wandb sweep
-    sweep_id = input("Input the sweep_id (or press Enter to create new): ").strip()
+    sweep_id = os.getenv('SWEEP_ID', None)
+    
+    if not sweep_id:
+        sweep_id = input("Input the sweep_id (or press Enter to create new): ").strip()
 
     if not sweep_id:
         # Create a new sweep
         sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
         print(f"Created new sweep with ID: {sweep_id}")
+        
     else:
         print(f"Using existing sweep ID: {sweep_id}")
 
     # Run the sweep
-    wandb.agent(sweep_id, function=train_with_sweep, count=50, entity=entity, project=project)  # Run 50 trials
+    wandb.agent(sweep_id, function=train_with_sweep, count=os.getenv('SWEEP_ITERATIONS', 20), entity=entity, project=project)  # Run 50 trials
 
 def train_with_sweep():
     """Training function for wandb sweep."""
