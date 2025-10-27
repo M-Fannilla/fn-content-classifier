@@ -4,14 +4,14 @@ import timm
 import json
 
 # import custom modules
-from model import ClassifierModel
-from training.config import Config
-from training.trainer import ModelConfig
+from src.model import ClassifierModel
+from src.training.config import Config
+from src.training.trainer import ModelConfig
 
 train_config = Config()
 
 MODEL_ROOT = Path(train_config.models_dir)
-ONNX_FOLDER = Path('./inference/models/onnx')
+ONNX_FOLDER = Path('src/inference/models/onnx')
 ONNX_FOLDER.mkdir(parents=True, exist_ok=True)
 
 

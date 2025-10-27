@@ -19,7 +19,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize model manager
-MODEL_DIR = Path(os.getenv("MODEL_DIR", "./models"))
+MODEL_DIR = Path(os.getenv("MODEL_DIR", "models"))
 model_manager = ModelManager(MODEL_DIR)
 
 # Preload models at startup

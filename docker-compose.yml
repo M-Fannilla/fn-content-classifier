@@ -1,7 +1,7 @@
 services:
   gradio-app:
     build:
-      context: inference
+      context: src/inference
       dockerfile: inference/Dockerfile
     ports:
       - "7860:7860"

@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: fn-classfier
+Version: 0.0.1
+Summary: Classifying images using machine learning models.
+Requires-Python: >=3.11
+Provides-Extra: train
+Requires-Dist: timm; extra == "train"
+Requires-Dist: numpy; extra == "train"
+Requires-Dist: pandas; extra == "train"
+Requires-Dist: Pillow; extra == "train"
+Requires-Dist: scikit-learn; extra == "train"
+Requires-Dist: matplotlib; extra == "train"
+Requires-Dist: seaborn; extra == "train"
+Requires-Dist: scipy; extra == "train"
+Requires-Dist: tqdm; extra == "train"
+Requires-Dist: iterative-stratification; extra == "train"
+Requires-Dist: wandb; extra == "train"
+Requires-Dist: weave; extra == "train"
+Requires-Dist: jupyter; extra == "train"
+Requires-Dist: ipywidgets; extra == "train"
+Requires-Dist: gradio; extra == "train"
+Requires-Dist: onnx; extra == "train"
+Requires-Dist: onnxruntime; extra == "train"
+Requires-Dist: torch-lr-finder; extra == "train"
+Requires-Dist: pynvml; extra == "train"
+Provides-Extra: demo
+Requires-Dist: gradio; extra == "demo"
+Requires-Dist: onnxruntime; extra == "demo"
+Requires-Dist: numpy; extra == "demo"
+Requires-Dist: Pillow; extra == "demo"
+Requires-Dist: plotly; extra == "demo"
+Provides-Extra: inference
+Requires-Dist: onnxruntime; extra == "inference"
+Requires-Dist: numpy; extra == "inference"
+Requires-Dist: Pillow; extra == "inference"
+Provides-Extra: gcp
+Requires-Dist: google-cloud-storage; extra == "gcp"
+Requires-Dist: google-cloud-pubsub; extra == "gcp"
+Provides-Extra: testing
+Requires-Dist: pytest; extra == "testing"
+Requires-Dist: pytest-cov; extra == "testing"
+Requires-Dist: pytest-asyncio; extra == "testing"

@@ -4,11 +4,11 @@ import numpy as np
 import torch
 
 # Import our custom modules
-from training.config import Config
-from training.dataset import create_data_loaders, load_and_prepare_data
-from training.find_batch_size import find_batch_size
-from training.trainer import Trainer
-from training.utils import (
+from src.training.config import Config
+from src.training.dataset import create_data_loaders, load_and_prepare_data
+from src.training.find_batch_size import find_batch_size
+from src.training.trainer import Trainer
+from src.training.utils import (
     compute_class_frequency,
     find_best_thresholds,
     print_system_info,

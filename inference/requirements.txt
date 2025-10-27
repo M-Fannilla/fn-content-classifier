@@ -1,5 +1,0 @@
-gradio
-onnxruntime
-numpy
-pillow
-plotly

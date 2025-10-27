@@ -14,11 +14,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # Install Python and system dependencies
 RUN apt-get update && apt-get install -y \
-    python3.10 \
     python3-pip \
     python3-dev \
-    git \
-    wget \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -31,32 +28,27 @@ RUN apt-get update && apt-get install -y \
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
     ln -sf /usr/bin/pip3 /usr/bin/pip
 
-# Upgrade pip
-
 # Set working directory
 WORKDIR /app
 
+COPY . .
+RUN rm -rf /src/inference /src/notebooks
+
 RUN pip install --upgrade pip setuptools wheel
 
-# Install PyTorch with CUDA support first (for L4 GPU - CUDA 12.1)
-RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# Install PyTorch with CUDA support first
+RUN chmod +x /app/scripts/install_pytorch.sh
+RUN ./app/install_pytorch.sh
+
 # Install other Python dependencies
-RUN pip install timm numpy pandas Pillow scikit-learn matplotlib seaborn scipy tqdm iterative-stratification wandb weave pyyaml
+RUN pip ".[train]"
 
 RUN wandb login ${WANDB_API_KEY}
 RUN echo "WANDB_API_KEY: ${WANDB_API_KEY}"
-# Copy project files
-COPY training .
 
-# Create directories for outputs
-RUN mkdir -p /models /outputs /wandb
-
-# Set environment variables for Cloud Run
-ENV PORT=8080
-
-# Health check endpoint (optional, for Cloud Run)
-RUN echo '#!/bin/bash\npython -c "import torch; print(f\"CUDA available: {torch.cuda.is_available()}\"); print(f\"CUDA devices: {torch.cuda.device_count()}\")"' > /app/health_check.sh && \
-    chmod +x /app/health_check.sh
+# Health check endpoint
+RUN chmod +x /app/scripts/health_check.sh
+RUN ./app/health_check.sh && echo "Health check passed"
 
 # Entry point for running the sweep
 # WANDB_API_KEY and SWEEP_ID should be passed as environment variables

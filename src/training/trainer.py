@@ -21,7 +21,7 @@ import torch
 from config import Config
 from losses import WeightedBCELoss
 from metrics import MultilabelMetrics
-from training.model_helpers import create_model, setup_model_for_training
+from src.training.model_helpers import create_model, setup_model_for_training
 from utils import find_best_thresholds
 
 @dataclass

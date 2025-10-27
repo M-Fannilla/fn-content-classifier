@@ -3,7 +3,7 @@ import gc
 from timm import create_model
 import pynvml
 
-from training.config import Config
+from src.training.config import Config
 
 
 def _get_gpu_memory(device="cuda"):
