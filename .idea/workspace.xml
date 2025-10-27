@@ -4,39 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/install_torch.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/health_check.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convert_to_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/convert_to_onnx.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/gradio_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/gradio_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/image_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/image_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/inference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/model_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/model_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/visualization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/actions_dataset_balance.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebooks/actions_dataset_balance.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/bodyparts_dataset_balance.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebooks/bodyparts_dataset_balance.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/train_sweep.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training.Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/training.Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/find_batch_size.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/find_batch_size.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/model_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/model_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/model_train.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/trainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/training/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/wandb_sweep_config.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -109,7 +77,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="14379000" />
+      <workItem from="1761586256358" duration="14397000" />
     </task>
     <servers />
   </component>
