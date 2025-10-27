@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="351f5b4d-6b0f-4a16-9b02-7bebd60c78c0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/inference.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier/src/fn_transcoder/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
-    </list>
+    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,18 +13,14 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Jupyter Notebook" />
         <option value="Python Script" />
       </list>
     </option>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 6
+  &quot;associatedIndex&quot;: 1
 }</component>
-  <component name="ProjectId" id="348lMmNiXODMBXorRliztpiMvRz" />
+  <component name="ProjectId" id="34eXeWITVDB4iRVHLycDLVXxLW8" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -42,124 +30,43 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/milosz/Projects/fn-poc-classifier",
+    "last_opened_file_path": "/Users/milosz/Projects/fn-classifier-final/training",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "memory.settings",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
-  },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Jupyter",
-      "Python"
-    ]
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/training" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/models" />
-      <recent name="$PROJECT_DIR$/../lottery/service" />
-      <recent name="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/onnx" />
-      <recent name="$PROJECT_DIR$/../lottery/service" />
-      <recent name="$PROJECT_DIR$/../Fannilla/Jobs/ContentClassifier" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/training" />
     </key>
-  </component>
-  <component name="RunManager" selected="Python.model_convert">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="fn-poc-classifier" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="model_convert" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="fn-poc-classifier" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/model_convert.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.model_convert" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.26830.99" />
-        <option value="bundled-python-sdk-164cda30dcd9-0af03a5fa574-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26830.99" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.27397.106" />
+        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
       </set>
     </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="351f5b4d-6b0f-4a16-9b02-7bebd60c78c0" name="Changes" comment="" />
-      <created>1760603034116</created>
+      <changelist id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="" />
+      <created>1761575106465</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1760603034116</updated>
-      <workItem from="1760603035219" duration="7493000" />
-      <workItem from="1760686794450" duration="86000" />
-      <workItem from="1760698816258" duration="17000" />
-      <workItem from="1761029894399" duration="695000" />
-      <workItem from="1761030670294" duration="4199000" />
-      <workItem from="1761034921478" duration="8880000" />
-      <workItem from="1761048533599" duration="12236000" />
-      <workItem from="1761073726137" duration="1176000" />
-      <workItem from="1761075354045" duration="10363000" />
-      <workItem from="1761202648483" duration="1720000" />
-      <workItem from="1761204869700" duration="56000" />
-      <workItem from="1761204940758" duration="23631000" />
-      <workItem from="1761242142201" duration="33000" />
-      <workItem from="1761288939764" duration="640000" />
-      <workItem from="1761290339821" duration="3870000" />
-      <workItem from="1761332118697" duration="2460000" />
-      <workItem from="1761334674295" duration="1298000" />
-      <workItem from="1761413176947" duration="12896000" />
+      <updated>1761575106465</updated>
+      <workItem from="1761575107605" duration="6228000" />
+      <workItem from="1761586256358" duration="12443000" />
     </task>
     <servers />
   </component>
