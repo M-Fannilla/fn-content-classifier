@@ -93,10 +93,6 @@ class TorchModelConfig:
     image_size: int
     threshold: np.ndarray
 
-    @classmethod
-    def _config_kwargs(cls) -> list[str]:
-        return [str(f.name) for f in fields(cls)]
-
     def save_torch_model(self, save_path: str) -> None:
         torch.save(self.__dict__, save_path)
         print(f"Saved PyTorch model to {save_path}")
@@ -108,9 +104,11 @@ class TorchModelConfig:
             map_location=DEVICE,
             weights_only=False,
         )
+
+        config_args = [str(f.name) for f in fields(cls)]
         return TorchModelConfig(
             **{
-                field: checkpoint.get(field) for field in cls._config_kwargs()
+                field: checkpoint.get(field) for field in config_args
             }
         )
 
@@ -154,17 +152,13 @@ class OnnxModelConfig:
     image_size: int
     threshold: np.ndarray | list[float]
 
-    @classmethod
-    def _config_kwargs(cls) -> list[str]:
-        return [str(f.name) for f in fields(cls)]
-
     def save_config(self) -> Path:
         save_path = ONNX_DIR / f"{self.model_type}.json"
 
         if isinstance(self.threshold, np.ndarray):
             self.threshold = self.threshold.tolist()
 
-        self.threshold = [round(t, 3) for t in self.threshold]
+        self.threshold = [round(t, 5) for t in self.threshold]
 
         with open(save_path, 'w') as f:
             json.dump(self.__dict__, f)

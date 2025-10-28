@@ -75,7 +75,7 @@ def train_main(config: TrainConfig) -> None:
 if __name__ == "__main__":
     train_config = TrainConfig()
 
-    train_config.num_epochs = 15
+    train_config.num_epochs = 10
     train_config.learning_rate = 0.00001891324268721734
     train_config.bce_power = 0.6788091730324309
     train_config.tau_logit_adjust = 0.8612782621731778

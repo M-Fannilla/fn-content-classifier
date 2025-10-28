@@ -47,8 +47,8 @@ RUN wandb login ${WANDB_API_KEY}
 RUN echo "WANDB_API_KEY: ${WANDB_API_KEY}"
 
 # Health check endpoint
-RUN chmod +x /app/scripts/health_check.sh
-RUN ./app/health_check.sh && echo "Health check passed"
+RUN chmod +x /app/scripts/torch_check.sh
+RUN ./app/torch_check.sh && echo "Health check passed"
 
 # Entry point for running the sweep
 # WANDB_API_KEY and SWEEP_ID should be passed as environment variables
