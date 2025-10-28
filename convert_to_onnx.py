@@ -4,9 +4,9 @@ import timm
 import json
 
 # import custom modules
-from src.model import ClassifierModel
-from src.training.config import Config
-from src.training.trainer import ModelConfig
+from model import ClassifierModel
+from training.config import Config
+from training.trainer import ModelConfig
 
 train_config = Config()
 

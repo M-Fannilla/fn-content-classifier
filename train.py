@@ -4,11 +4,11 @@ import numpy as np
 import torch
 
 # Import our custom modules
-from src.training.config import Config
-from src.training.dataset import create_data_loaders, load_and_prepare_data
-from src.training.find_batch_size import find_batch_size
-from src.training.trainer import Trainer
-from src.training.utils import (
+from training.config import Config
+from training.dataset import create_data_loaders, load_and_prepare_data
+from training.find_batch_size import find_batch_size, suggest_grad_accumulation
+from training.trainer import Trainer
+from training.utils import (
     compute_class_frequency,
     find_best_thresholds,
     print_system_info,
@@ -57,11 +57,16 @@ def main():
     df, image_paths, labels = load_and_prepare_data(config=config)
     class_frequency = compute_class_frequency(df.drop(["file_name"], axis=1))
 
-    config.batch_size, config.grad_accum_steps = find_batch_size(
-        config=config,
-        num_classes=len(labels),
-        device=str(device),
-    )
+    if not config.batch_size:
+        config.batch_size = find_batch_size(
+            config=config,
+            num_classes=len(labels),
+            device=str(device),
+        )
+        config.grad_accum_steps = suggest_grad_accumulation(
+            config.batch_size,
+            target_eff_bs=1024,
+        )
 
     (
         train_loader,

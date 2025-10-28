@@ -3,7 +3,7 @@ import gc
 from timm import create_model
 import pynvml
 
-from src.training.config import Config
+from training.config import Config
 
 
 def _get_gpu_memory(device="cuda"):
@@ -24,7 +24,6 @@ def _find_max_batch_size(
     input_size,
     device="cuda",
     start=4,
-    amp=True,
 ):
     """
     Binary search for max batch size that fits in memory.
@@ -56,7 +55,7 @@ def _find_max_batch_size(
 
         try:
             dummy = torch.randn(mid, C, H, W, device=device)
-            with torch.cuda.amp.autocast(enabled=amp):
+            with torch.amp.autocast(device):
                 out = model(dummy)
                 loss = out.sum()
             loss.backward()
@@ -79,21 +78,21 @@ def _find_max_batch_size(
     return max_bs
 
 
-def _suggest_grad_accumulation(max_micro_bs, target_eff_bs=1024):
-    return max(1, target_eff_bs // max_micro_bs)
+def suggest_grad_accumulation(max_micro_bs, target_eff_bs=1024):
+    grad_acc =  max(1, target_eff_bs // max_micro_bs)
+    print(f"Recommended grad_accumulation: {grad_acc}")
+    return grad_acc
 
 
 def find_batch_size(
     config: Config,
     num_classes: int,
     device="cuda",
-    target_eff_bs=1024,
-    amp=True,
-) -> tuple[int, int]:
+) -> int:
     """Compute optimal micro-batch + grad accumulation."""
     if device != "cuda" or not torch.cuda.is_available():
         print("Non-CUDA device detected; skipping batch size search.")
-        return config.batch_size or 32, 1
+        return config.batch_size or 32
 
     print("Finding optimal batch size and gradient accumulation...")
     img_size = config.img_size
@@ -111,14 +110,7 @@ def find_batch_size(
         input_size=input_size,
         device=device,
         start=16,
-        amp=amp,
     )
     print(f"Max micro-batch fitting GPU: {max_micro_bs}")
 
-    grad_acc = _suggest_grad_accumulation(
-        max_micro_bs,
-        target_eff_bs=target_eff_bs,
-    )
-    print(f"Recommended grad_accumulation: {grad_acc}")
-
-    return max_micro_bs, grad_acc
+    return max_micro_bs

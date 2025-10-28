@@ -1,0 +1,8 @@
+gradio
+onnxruntime
+numpy
+Pillow
+plotly
+onnxruntime
+numpy
+Pillow

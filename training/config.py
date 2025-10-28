@@ -15,7 +15,7 @@ class Config:
 
     # Training settings
     seed: int = 42
-    batch_size: int = 32
+    batch_size: int = None
     num_workers: int = os.cpu_count() // 2
     threshold: float = 0.4
     img_size: int = 384

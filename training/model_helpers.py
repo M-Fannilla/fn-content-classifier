@@ -2,8 +2,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import timm
-from config import Config
-from src.model import ClassifierModel
+from training.config import Config
+from model import ClassifierModel
 
 
 def create_model(config: Config, num_classes: int) -> nn.Module:

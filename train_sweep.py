@@ -5,11 +5,11 @@ import wandb
 import torch
 
 # Import training modules
-from src.training.config import Config
-from src.training.find_batch_size import find_batch_size
-from src.training.utils import compute_class_frequency
-from src.training.dataset import create_data_loaders, load_and_prepare_data
-from src.training.trainer import Trainer
+from training.config import Config
+from training.find_batch_size import find_batch_size
+from training.utils import compute_class_frequency
+from training.dataset import create_data_loaders, load_and_prepare_data
+from training.trainer import Trainer
 
 
 def run_sweep():

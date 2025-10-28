@@ -18,11 +18,11 @@ import wandb
 import torch
 
 # Import custom modules
-from config import Config
-from losses import WeightedBCELoss
-from metrics import MultilabelMetrics
-from src.training.model_helpers import create_model, setup_model_for_training
-from utils import find_best_thresholds
+from training.config import Config
+from training.losses import WeightedBCELoss
+from training.metrics import MultilabelMetrics
+from training.model_helpers import create_model, setup_model_for_training
+from training.utils import find_best_thresholds
 
 @dataclass
 class ModelConfig:
@@ -65,6 +65,7 @@ class Trainer:
             device: str,
             init_wandb: bool = True,
     ):
+
         self.config = config
         self.train_loader = train_loader
         self.val_loader = val_loader
@@ -82,10 +83,11 @@ class Trainer:
         self.lr_range_end = self.config.lr_range_end
         self.lr_range_steps = self.config.lr_range_steps
 
-        # Loss / Optimizer / Scheduler
-        self.criterion = self.get_criterion()
-        self.optimizer = self.get_optimizer()
-        self.scheduler = self.get_scheduler(self.optimizer)
+        # Model / Loss / Optimizer / Scheduler
+        self.model = self.get_model().to(self.device)
+        self.criterion = None
+        self.optimizer = None
+        self.scheduler = None
 
         # AMP
         self.scaler = GradScaler(device)
@@ -277,8 +279,6 @@ class Trainer:
 
     def train(self, save_model: bool = True) -> dict[str, list[float]]:
         """Main training loop with early stopping and learning rate reduction."""
-        self.model = self.get_model().to(self.device)
-
         if not self.learning_rate:
             self.learning_rate = self.find_lr()
 
@@ -404,7 +404,7 @@ class Trainer:
             self.get_model(),
             self.get_optimizer(learning_rate=0.001), # dummy lr, will be overridden
             self.get_criterion(),
-            device="cuda",
+            device=self.device,
         )
         lr_finder.range_test(
             self.train_loader,

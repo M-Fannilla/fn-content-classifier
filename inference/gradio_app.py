@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 import gradio as gr
 from model_loader import ModelManager
-from image_processing import preprocess_image
+from image_processing import ImageProcessor
 from inference import predict_both_models
 from visualization import create_combined_plot
 
@@ -40,7 +40,7 @@ def predict_image(image, top_k):
     try:
         # Preprocess image
         logger.info("Preprocessing image...")
-        image_array = preprocess_image(image, target_size=384)
+        image_array = ImageProcessor(384).process(image)
         
         # Run inference on both models
         logger.info("Running inference...")
