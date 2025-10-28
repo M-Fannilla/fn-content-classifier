@@ -1,6 +1,8 @@
 # Use NVIDIA CUDA base image for GPU support
 FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
 
+ARG SWEEP_ID
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -8,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     WANDB_API_KEY=1d46416e290617f0005c9b98c3592a0350c5fa01 \
-    SWEEP_ID=1zw9r5wo \
+    SWEEP_ID=${SWEEP_ID} \
     SWEEP_ITERATIONS=15
     
 

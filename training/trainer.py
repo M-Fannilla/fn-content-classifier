@@ -1,4 +1,3 @@
-import torch.nn as nn
 from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -9,8 +8,9 @@ import wandb
 import torch
 
 # Import custom modules
-from ..configs import TrainConfig, TorchModelConfig
 from .. import TORCH_MODELS_DIR, DEVICE
+from ..model import ClassifierModel
+from ..configs import TrainConfig, TorchModelConfig
 from .losses import WeightedBCELoss
 from .metrics import MultilabelMetrics
 from .model_helpers import create_model, setup_model_for_training
@@ -35,7 +35,7 @@ class Trainer:
 
         # Move model to device
         self.class_freq = class_freq
-        self.model = self.get_model().to(DEVICE)
+        self.model = self.get_model()
 
         self.criterion = WeightedBCELoss(
             class_freq=self.class_freq,
@@ -53,9 +53,6 @@ class Trainer:
             T_max=self.config.epochs,
             eta_min=self.config.cosine_annealing_min * self.config.learning_rate,
         )
-
-        self.warmup_epochs = max(1, int(0.1 * self.config.epochs))
-        self.main_epochs = self.config.epochs - self.warmup_epochs
 
         # Mixed precision scaler
         self.scaler = GradScaler(DEVICE)
@@ -132,7 +129,7 @@ class Trainer:
             self.optimizer.zero_grad()
 
             # Mixed precision forward pass
-            with autocast(str(DEVICE)):
+            with autocast(DEVICE):
                 outputs = self.model(images)
                 loss = self.criterion(outputs, labels)
 
@@ -163,7 +160,7 @@ class Trainer:
                 images = images.to(DEVICE, non_blocking=True)
                 labels = labels.to(DEVICE, non_blocking=True)
 
-                with autocast(str(DEVICE)):
+                with autocast(DEVICE):
                     outputs = self.model(images)
                     loss = self.criterion(outputs, labels)
 
@@ -295,10 +292,10 @@ class Trainer:
         print("  Mixed precision: Enabled")
         print("-" * 50)
 
-    def get_model(self) -> nn.Module:
+    def get_model(self) -> ClassifierModel:
         print(f"\nCreating model: {self.config.model_name}")
         model = create_model(self.config, num_classes=len(self.label_columns))
         model = setup_model_for_training(
             self.config, model, class_freq=self.class_freq
         )
-        return model
+        return model.to(DEVICE)
