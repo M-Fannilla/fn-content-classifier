@@ -1,5 +1,7 @@
 from torch_lr_finder import LRFinder
-from training.trainer import Trainer
+
+from .. import DEVICE
+from .trainer import Trainer
 
 
 def find_lr(trainer: Trainer, plot: bool = True) -> float:
@@ -7,7 +9,7 @@ def find_lr(trainer: Trainer, plot: bool = True) -> float:
         trainer.model,
         trainer.optimizer,
         trainer.criterion,
-        device="cuda",
+        device=DEVICE,
     )
 
     lr_finder.range_test(

@@ -1,10 +1,19 @@
 """Model loading and management."""
-import json
+import enum
 import logging
-from typing import Dict, List
+
 import onnxruntime as ort
 
+from ..configs import OnnxModelConfig
+from .. import ONNX_DIR
+
 logger = logging.getLogger(__name__)
+
+
+class ModelsEnum(enum.Enum):
+    ACTION = "action"
+    BODYPARTS = "bodyparts"
+
 
 
 class ModelManager:
@@ -12,77 +21,50 @@ class ModelManager:
     
     def __init__(
             self,
-            action_model_path: str,
-            bodyparts_model_path: str,
-            image_size: int,
+            action_model_name: str,
+            bodyparts_model_name: str,
     ):
-        self.models: Dict[str, ort.InferenceSession] = {}
-        self.labels: Dict[str, List[str]] = {}
-        self.image_size = image_size
-        
-        # Model configuration
-        self.model_config = {
-            "action": {
-                "path": action_model_path,
-                "labels_path": action_model_path.replace(".onnx", ".json"),
-                "img_size": image_size
-            },
-            "bodyparts": {
-                "path": bodyparts_model_path,
-                "labels_path": bodyparts_model_path.replace(".onnx", ".json"),
-                "img_size": image_size
-            },
+        self.models: dict[ModelsEnum, ort.InferenceSession] = {}
+        self.model_configs = {
+            ModelsEnum.ACTION: OnnxModelConfig.load_config(action_model_name),
+            ModelsEnum.BODYPARTS: OnnxModelConfig.load_config(bodyparts_model_name),
         }
-    
-    def load_labels(self, model_name: str) -> List[str]:
-        """Load labels for a model from JSON file."""
-        if model_name in self.labels:
-            logger.info(f"Labels for '{model_name}' already loaded")
-            return self.labels[model_name]
-        
-        if model_name not in self.model_config:
-            raise ValueError(f"Unknown model: {model_name}")
-        
-        labels_path = self.model_config[model_name]["labels_path"]
 
-        try:
-            with open(labels_path, 'r') as f:
-                labels = json.load(f)
-            self.labels[model_name] = labels
-            logger.info(f"Loaded {len(labels)} labels for '{model_name}'")
-            return labels
+    def load_all(self):
+        """Load all models and their labels."""
+        for model_name in self.get_all_models():
+            self.load_model(model_name)
 
-        except Exception as e:
-            logger.error(f"Failed to load labels: {e}")
-            return []
-    
-    def load_model(self, model_name: str) -> ort.InferenceSession:
+    def load_model(self, model_enum: ModelsEnum) -> None:
         """Load an ONNX model into an inference session."""
-        if model_name in self.models:
-            logger.info(f"Model '{model_name}' already loaded")
-            return self.models[model_name]
+        if model_enum in self.models:
+            return
         
-        if model_name not in self.model_config:
-            raise ValueError(f"Unknown model: {model_name}")
-        
-        model_path = self.model_config[model_name]["path"]
+        model_name = self.model_configs[model_enum].model_name
         
         providers = ['CPUExecutionProvider']
         if ort.get_device().lower() == 'gpu':
             providers.insert(0, 'CUDAExecutionProvider')
         
-        logger.info(f"Loading model '{model_name}' from {model_path}")
-        
-        try:
-            session = ort.InferenceSession(str(model_path), providers=providers)
-            self.models[model_name] = session
-            logger.info(f"Model '{model_name}' loaded successfully")
-            return session
-        except Exception as e:
-            logger.error(f"Failed to load ONNX model: {e}")
-            raise
-    
-    def get_all_models(self) -> List[str]:
+        self.models[model_enum] = ort.InferenceSession(ONNX_DIR / model_name, providers=providers)
+        logger.info(f"Model '{model_name}' from {ONNX_DIR} loaded successfully")
+
+    def get_all_models(self) -> list[ModelsEnum]:
         """Get list of available model names."""
-        return list(self.model_config.keys())
+        return list(self.model_configs.keys())
+
+    def get_image_size(self) -> int:
+        """Get expected image size for a model."""
+        image_size: int | None = None
+        for config in self.model_configs.values():
+            if not image_size:
+                image_size = config.image_size
+            else:
+                if image_size != config.image_size:
+                    raise ValueError("Inconsistent image sizes across models.")
+        return image_size
+
+    def get_labels(self, model_enum: ModelsEnum) -> list[str]:
+        """Get labels for a model."""
+        return self.model_configs[model_enum].labels
 

@@ -1,43 +1,21 @@
-import random
 import time
-import numpy as np
 import torch
 
 # Import our custom modules
-from training.config import Config
-from training.dataset import create_data_loaders, load_and_prepare_data
-from training.find_lr import find_lr
-from training.trainer import Trainer
-from training.utils import (
+from .configs import TrainConfig
+from .training.dataset import create_data_loaders, load_and_prepare_data
+from .training.trainer import Trainer
+from .training.utils import (
     compute_class_frequency,
-    find_best_thresholds,
     print_system_info,
+    set_seed,
 )
 
-
-def set_seed(seed: int) -> None:
-    """Set random seeds for reproducibility."""
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    # For deterministic behavior
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-
-def main():
+def train_main(config: TrainConfig) -> None:
     """Main training function."""
 
     # Print system information
     print_system_info()
-    config = Config()
-
-    # overwrite finetuning:
-    config.num_epochs = 15
-    config.learning_rate = 0.00001891324268721734
-    config.bce_power = 0.6788091730324309
-    config.tau_logit_adjust = 0.8612782621731778
-    config.use_wandb = True
 
     # Print configuration
     print("\nTRAINING CONFIGURATION")
@@ -73,7 +51,6 @@ def main():
         train_loader=train_loader,
         val_loader=val_loader,
         label_columns=label_columns,
-        device=str(device),
         init_wandb=True
     )
 
@@ -86,7 +63,7 @@ def main():
     print("=" * 60)
 
     start_time = time.time()
-    history = trainer.train(save_model=True)
+    trainer.train(save_model=True)
     training_time = time.time() - start_time
 
     print("\n" + "=" * 60)
@@ -94,15 +71,13 @@ def main():
     print("=" * 60)
     print(f"Total training time: {training_time / 60:.2f} minutes")
     print(f"Best validation {trainer.best_model_metric}: {trainer.best_metric_value:.4f}")
-    print(f"Total epochs: {len(history['train_loss'])}")
-
-    y_true, y_pred, y_prob, total_loss = trainer.validate_single_epoch()
-    dynamic_threshold = find_best_thresholds(y_true=y_true, y_prob=y_prob)
-
-    trainer.save_best_model(
-        filename=f'{trainer.best_model_name}',
-        threshold=dynamic_threshold,
-    )
 
 if __name__ == "__main__":
-    main()
+    config = TrainConfig()
+    config.num_epochs = 15
+    config.learning_rate = 0.00001891324268721734
+    config.bce_power = 0.6788091730324309
+    config.tau_logit_adjust = 0.8612782621731778
+    config.use_wandb = True
+
+    train_main(config=config)

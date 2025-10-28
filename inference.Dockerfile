@@ -10,7 +10,7 @@ RUN apt-get update && \
     && apt-get clean
 
 # Copy requirements first for better caching
-COPY inference/requirements.txt /requirements.txt
+COPY inference/requirements.txt /app/requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -21,4 +21,6 @@ COPY inference/ /app/inference/
 # Set Python path
 ENV PYTHONPATH=/app
 
-EXPOSE 7860
+# Cloud Run uses PORT environment variable
+ENV PORT=8080
+EXPOSE 8080

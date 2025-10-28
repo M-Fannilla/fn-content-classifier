@@ -1,12 +1,12 @@
 import numpy as np
-import torch
 import torch.nn as nn
 import timm
-from training.config import Config
-from model import ClassifierModel
+from ..configs import TrainConfig
+from .. import DEVICE
+from ..model import ClassifierModel
 
 
-def create_model(config: Config, num_classes: int) -> nn.Module:
+def create_model(config: TrainConfig, num_classes: int) -> nn.Module:
     """Create and configure the model."""
     return timm.create_model(
             config.model_name,
@@ -16,9 +16,8 @@ def create_model(config: Config, num_classes: int) -> nn.Module:
     )
 
 def setup_model_for_training(
-        config: Config,
+        config: TrainConfig,
         model: nn.Module,
-        device: torch.device,
         class_freq: np.ndarray,
 ) -> ClassifierModel:
     """Setup model for finetuning (freeze backbone, train classifier only)."""
@@ -42,8 +41,8 @@ def setup_model_for_training(
     )
     print(f"  Logit adjustment applied with tau={config.tau_logit_adjust}")
 
-    model = model.to(device)
-    print(f"  Model moved to: {device}")
+    model = model.to(DEVICE)
+    print(f"  Model moved to: {DEVICE}")
     return model
 
 

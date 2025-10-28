@@ -2,56 +2,64 @@ import os
 import sys
 import yaml
 import wandb
-import torch
 
 # Import training modules
-from training.config import Config
-from training.find_batch_size import find_batch_size
-from training.utils import compute_class_frequency
-from training.dataset import create_data_loaders, load_and_prepare_data
-from training.trainer import Trainer
+from configs import TrainConfig
+from training.utils import set_seed
+from .training.utils import compute_class_frequency
+from .training.dataset import create_data_loaders, load_and_prepare_data
+from .training.trainer import Trainer
 
+WANDB_ENTITY: str | None = None
+WANDB_PROJECT: str | None = None
+SWEEP_ITERATIONS: int = int(os.getenv('SWEEP_ITERATIONS', 20))
+SWEEP_ID: str | None = os.getenv('SWEEP_ID', None)
 
-def run_sweep():
+def run_sweep(model_type: str):
     """Run a wandb sweep for hyperparameter optimization."""
 
+    global WANDB_ENTITY, WANDB_PROJECT, SWEEP_ID
+
     # Load sweep configuration
-    with open('wandb_sweep_config.yaml', 'r') as f:
+    with open(f'sweep_{model_type}.yaml', 'r') as f:
         sweep_config = yaml.safe_load(f)
 
     # Get entity and project from config
-    entity = sweep_config.get('wandb_entity', 'miloszbertman')
-    project = sweep_config.get('wandb_project', 'fn-content-classifier')
+    WANDB_ENTITY = sweep_config.get('wandb_entity')
+    WANDB_PROJECT = sweep_config.get('wandb_project')
     
     # Initialize wandb sweep
-    sweep_id = os.getenv('SWEEP_ID', None)
-    
-    if not sweep_id:
-        sweep_id = input("Input the sweep_id (or press Enter to create new): ").strip()
+    if not SWEEP_ID:
+        SWEEP_ID = input("Input the sweep_id (or press Enter to create new): ").strip()
 
-    if not sweep_id:
-        # Create a new sweep
-        sweep_id = wandb.sweep(sweep_config, entity=entity, project=project)
-        print(f"Created new sweep with ID: {sweep_id}")
-        
+    # Create a new sweep
+    if not SWEEP_ID:
+        SWEEP_ID = wandb.sweep(sweep_config, entity=WANDB_ENTITY, project=WANDB_PROJECT)
+        print(f"Created new sweep with ID: {SWEEP_ID}")
     else:
-        print(f"Using existing sweep ID: {sweep_id}")
+        print(f"Using existing sweep ID: {SWEEP_ID}")
 
     # Run the sweep
-    wandb.agent(sweep_id, function=train_with_sweep, count=os.getenv('SWEEP_ITERATIONS', 20), entity=entity, project=project)  # Run 50 trials
+    wandb.agent(
+        SWEEP_ID,
+        function=train_with_sweep,
+        count=SWEEP_ITERATIONS,
+        entity=WANDB_ENTITY,
+        project=WANDB_PROJECT,
+    )
 
 def train_with_sweep():
     """Training function for wandb sweep."""
-
-    # Get hyperparameters from wandb
+    global WANDB_ENTITY, WANDB_PROJECT
     # Initialize wandb run with config values
     wandb.init(
         project="fn-content-classifier",
         entity="miloszbertman",
     )
 
+    # Get hyperparameters from wandb
     config = wandb.config
-    sweep_config = Config(
+    sweep_config = TrainConfig(
         model_name="convnextv2_tiny",
         epochs=config.epochs,
         learning_rate=config.learning_rate,
@@ -59,21 +67,14 @@ def train_with_sweep():
         tau_logit_adjust=config.tau_logit_adjust,
         weight_decay=config.weight_decay,
         use_wandb=True,
-        wandb_project="fn-content-classifier",
-        wandb_entity="miloszbertman",
-        wandb_tags=["sweep", "multilabel", "convnextv2"]
+        wandb_project=WANDB_PROJECT,
+        wandb_entity=WANDB_ENTITY,
+        wandb_tags=["sweep", "multilabel", "convnextv2"],
     )
-
-    # Set device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    set_seed(sweep_config.seed)
 
     df, image_paths, labels = load_and_prepare_data(config=sweep_config)
     class_frequency = compute_class_frequency(df.drop(["file_name"], axis=1))
-    sweep_config.batch_size, sweep_config.grad_accum_steps = find_batch_size(
-        config=sweep_config,
-        num_classes=len(labels),
-        device=str(device),
-    )
 
     (
         train_loader,
@@ -87,11 +88,10 @@ def train_with_sweep():
     print("\nInitializing trainer...")
     trainer = Trainer(
         class_freq=class_frequency,
-        config=config,
+        config=sweep_config,
         train_loader=train_loader,
         val_loader=val_loader,
         label_columns=label_columns,
-        device=str(device),
         init_wandb=False,
     )
 
@@ -101,10 +101,11 @@ def train_with_sweep():
     print(f"Training completed! Best {trainer.best_model_metric}: {trainer.best_metric_value:.4f}")
 
 if __name__ == "__main__":
+    model_type = "action"
     # Check if wandb is logged in
     if not wandb.api.api_key:
         print("Please run 'wandb login' first!")
         sys.exit(1)
 
     # Run the sweep
-    run_sweep()
+    run_sweep(model_type=model_type)

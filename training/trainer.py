@@ -1,6 +1,3 @@
-from dataclasses import dataclass, fields
-from pathlib import Path
-
 import torch.nn as nn
 from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
@@ -12,68 +9,38 @@ import wandb
 import torch
 
 # Import custom modules
-from training.config import Config
-from training.losses import WeightedBCELoss
-from training.metrics import MultilabelMetrics
-from training.model_helpers import create_model, setup_model_for_training
-from training.utils import find_best_thresholds
-
-@dataclass
-class ModelConfig:
-    model_name: str
-    model_state_dict: dict
-    labels: list[str]
-    image_size: int
-    tau_logit_adjust: float
-    class_frequency: np.ndarray
-    threshold: np.ndarray
-
-    @classmethod
-    def _config_kwargs(cls) -> list[str]:
-        return [str(f.name) for f in fields(cls)]
-
-    def save_config(self) -> dict:
-        return {
-            field: getattr(self, field) for field in self._config_kwargs()
-        }
-
-    @classmethod
-    def load_model(cls, model_path: str) -> 'ModelConfig':
-        checkpoint = torch.load(model_path, map_location="cpu", weights_only=False)
-        model_dict = {
-            field: checkpoint.get(field) for field in cls._config_kwargs()
-        }
-        return ModelConfig(**model_dict)
-
+from ..configs import TrainConfig, TorchModelConfig
+from .. import TORCH_MODELS_DIR, DEVICE
+from .losses import WeightedBCELoss
+from .metrics import MultilabelMetrics
+from .model_helpers import create_model, setup_model_for_training
+from .utils import find_best_thresholds
 
 class Trainer:
     """Training class for ConvNeXt V2 multilabel classification."""
 
     def __init__(
             self,
-            config: Config,
+            config: TrainConfig,
             class_freq: np.ndarray,
             train_loader: DataLoader,
             val_loader: DataLoader,
             label_columns: list[str],
-            device: str,
             init_wandb = True,
     ):
         self.config = config
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.label_columns = label_columns
-        self.device = device
 
         # Move model to device
         self.class_freq = class_freq
-        self.model = self.get_model().to(self.device)
+        self.model = self.get_model().to(DEVICE)
 
         self.criterion = WeightedBCELoss(
             class_freq=self.class_freq,
             power=self.config.bce_power,
-            device=self.device,
-        ).to(self.device)
+        ).to(DEVICE)
 
         self.optimizer = AdamW(
             filter(lambda p: p.requires_grad, self.model.parameters()),
@@ -91,7 +58,7 @@ class Trainer:
         self.main_epochs = self.config.epochs - self.warmup_epochs
 
         # Mixed precision scaler
-        self.scaler = GradScaler(device)
+        self.scaler = GradScaler(DEVICE)
 
         # Metrics calculator
         self.metrics_calculator = MultilabelMetrics()
@@ -119,25 +86,20 @@ class Trainer:
     @property
     def best_model_name(self):
         components = [
-            "wbce",
             self.config.model_type,
             self.config.model_name,
             self.config.batch_size,
-            self.config.img_size,
         ]
         return "_".join([str(c) for c in components])
 
     def _init_wandb(self):
         """Initialize Weights & Biases logging."""
-        # Generate run name if not provided
-        run_name = self.best_model_name
-
         # Initialize wandb
-        if self.init_wandb:
+        if self.init_wandb and self.config.use_wandb:
             wandb.init(
                 project=self.config.wandb_project,
                 entity=self.config.wandb_entity,
-                name=run_name,
+                name=self.best_model_name,
                 tags=self.config.wandb_tags or [],
                 config={
                     'model_name': self.config.model_name,
@@ -149,20 +111,13 @@ class Trainer:
                     'bce_power': self.config.bce_power,
                     'tau_logit_adjust': self.config.tau_logit_adjust,
                     'num_classes': len(self.label_columns),
-                    'train_samples': len(self.train_loader.dataset),
-                    'val_samples': len(self.val_loader.dataset),
-                    'device': str(self.device)
+                    'train_samples': len(self.train_loader.dataset), # noqa
+                    'val_samples': len(self.val_loader.dataset), # noqa
+                    'device': str(DEVICE)
                 }
             )
 
-    def _log_metrics(self, metrics: dict[str, float], epoch: int, prefix: str = ""):
-        """Log metrics to wandb."""
-        if self.config.use_wandb:
-            log_dict = {f"{prefix}{k}": v for k, v in metrics.items()}
-            log_dict['epoch'] = epoch
-            wandb.log(log_dict)
-
-    def train_epoch(self, epoch: int) -> float:
+    def _train_epoch(self, epoch: int) -> float:
         """Train for one epoch."""
         self.model.train()
         total_loss = 0.0
@@ -171,13 +126,13 @@ class Trainer:
         pbar = tqdm(self.train_loader, desc=f'Training Epoch {epoch}')
 
         for batch_idx, (images, labels) in enumerate(pbar):
-            images = images.to(self.device, non_blocking=True)
-            labels = labels.to(self.device, non_blocking=True)
+            images = images.to(DEVICE, non_blocking=True) # noqa
+            labels = labels.to(DEVICE, non_blocking=True)
 
             self.optimizer.zero_grad()
 
             # Mixed precision forward pass
-            with autocast(str(self.device)):
+            with autocast(str(DEVICE)):
                 outputs = self.model(images)
                 loss = self.criterion(outputs, labels)
 
@@ -197,31 +152,7 @@ class Trainer:
 
         return total_loss / num_batches
 
-    def validate_epoch(self) -> tuple[float, dict[str, float]]:
-        """Validate for one epoch."""
-        self.model.eval()
-
-        y_true, y_pred, y_prob, total_loss = self.validate_single_epoch()
-        self.validation_threshold = find_best_thresholds(
-            y_true=y_true,
-            y_prob=y_prob,
-        )
-
-        # Calculate metrics
-        metrics = self.metrics_calculator.compute_metrics(
-            y_true=y_true,
-            y_pred=y_pred,
-            y_pred_proba=y_prob,
-            threshold=self.validation_threshold,
-        )
-
-        avg_loss = total_loss / len(self.val_loader)
-
-        return avg_loss, metrics
-
-    def validate_single_epoch(
-            self,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    def _validate_epoch(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
         y_pred, y_true, y_prob = [], [], []
         total_loss, num_batches = 0.0, 0
 
@@ -229,23 +160,18 @@ class Trainer:
             pbar = tqdm(self.val_loader, desc='Validation')
 
             for images, labels in pbar:
-                images = images.to(self.device, non_blocking=True)
-                labels = labels.to(self.device, non_blocking=True)
+                images = images.to(DEVICE, non_blocking=True)
+                labels = labels.to(DEVICE, non_blocking=True)
 
-                with autocast(str(self.device)):
+                with autocast(str(DEVICE)):
                     outputs = self.model(images)
                     loss = self.criterion(outputs, labels)
 
                 total_loss += loss.item()
 
-                # Store predictions and labels
-                probabilities = torch.sigmoid(outputs).cpu().numpy()
-                predictions = outputs.cpu().numpy()
-                labels_np = labels.cpu().numpy()
-
-                y_pred.append(predictions)
-                y_true.append(labels_np)
-                y_prob.append(probabilities)
+                y_pred.append(outputs.cpu().numpy())
+                y_true.append(labels.cpu().numpy())
+                y_prob.append(torch.sigmoid(outputs).cpu().numpy())
 
                 num_batches += 1
 
@@ -264,7 +190,7 @@ class Trainer:
 
         return y_true, y_pred, y_prob, total_loss
 
-    def train(self, save_model: bool = True) -> dict[str, list[float]]:
+    def train(self, save_model: bool = True) -> None:
         """Main training loop with early stopping and learning rate reduction."""
         # Initialize wandb if enabled
         if self.config.use_wandb:
@@ -272,19 +198,11 @@ class Trainer:
 
         for epoch in range(self.config.epochs):
             # Training
-            train_loss = self.train_epoch(epoch=epoch)
+            train_loss = self._train_epoch(epoch=epoch)
 
             # Validation
-            val_loss, val_metrics = self.validate_epoch()
+            val_loss, val_metrics = self.validate()
             self.scheduler.step()
-
-            # Store history
-            self.history['train_loss'].append(train_loss)
-            self.history['val_loss'].append(val_loss)
-            self.history['val_f1_micro'].append(val_metrics['f1_micro'])
-            self.history['val_f1_macro'].append(val_metrics['f1_macro'])
-            self.history['val_roc_auc_micro'].append(val_metrics.get('roc_auc_micro', 0.0))
-            self.history['val_roc_auc_macro'].append(val_metrics.get('roc_auc_macro', 0.0))
 
             # Check for best model
             best_metric_value = val_metrics[self.best_model_metric]
@@ -294,8 +212,9 @@ class Trainer:
                 self.best_threshold = self.validation_threshold.copy()
 
                 print(f"  → New best {self.best_model_metric}: {best_metric_value:.4f}")
+
                 if save_model:
-                    self.save_checkpoint_model(self.best_model_name, threshold=self.validation_threshold)
+                    self.save_checkpoint(epoch=epoch)
 
             # Log metrics to wandb
             if self.config.use_wandb:
@@ -321,60 +240,65 @@ class Trainer:
             # Clear GPU cache after each epoch to prevent memory accumulation
             torch.cuda.empty_cache()
 
-        # Load best model
-        self.model.load_state_dict(self.best_model_state)
-
-        print(f"\nLoaded best model with {self.best_model_metric}: {self.best_metric_value:.4f}")
+        if save_model:
+            self.save_checkpoint(epoch='final')
 
         # Finish wandb run
         if self.config.use_wandb:
             wandb.finish()
 
-        return self.history
+    def validate(self) -> tuple[float, dict[str, float]]:
+        """Validate for one epoch."""
+        self.model.eval()
 
-    def save_checkpoint_model(self, filename: str, threshold: np.ndarray | float):
+        y_true, y_pred, y_prob, total_loss = self._validate_epoch()
+        self.validation_threshold = find_best_thresholds(
+            y_true=y_true,
+            y_prob=y_prob,
+        )
+
+        # Calculate metrics
+        metrics = self.metrics_calculator.compute_metrics(
+            y_true=y_true,
+            y_pred=y_pred,
+            y_pred_proba=y_prob,
+            threshold=self.validation_threshold,
+        )
+
+        avg_loss = total_loss / len(self.val_loader)
+
+        return avg_loss, metrics
+
+    def save_checkpoint(self, epoch: int | str) -> TorchModelConfig:
         """Save the trained model."""
-        model_path = f"{self.config.models_dir}/checkpoint/{filename}.pth"
-        self._save_pytorch(model_path=model_path, threshold=threshold)
-
-    def save_best_model(self, filename: str, threshold: np.ndarray | float):
-        """Save the trained model."""
-        model_path = f"{self.config.models_dir}/{filename}.pth"
-        self._save_pytorch(model_path=model_path, threshold=threshold)
-
-    def _save_pytorch(self, model_path: str, threshold: np.ndarray | float):
-        Path(model_path).parent.mkdir(parents=True, exist_ok=True)
-
-        model_config = ModelConfig(
-            model_name=self.config.model_name,
+        epoch = str(epoch)
+        filename = self.best_model_name
+        model_path = (
+            TORCH_MODELS_DIR / f"{epoch}_{filename}.pth" if epoch else f"{filename}.pth"
+        )
+        model_config = TorchModelConfig(
+            model_type=self.config.model_type,
             model_state_dict=self.best_model_state,
             labels=self.label_columns,
             image_size=self.config.img_size,
-            tau_logit_adjust=self.config.tau_logit_adjust,
-            class_frequency=self.class_freq,
-            threshold=threshold,
+            threshold=self.best_threshold,
         )
+        model_config.save_torch_model(save_path=model_path)
+        return model_config
 
-        torch.save(
-            model_config.save_config(),
-            model_path
-        )
-
-        print(f"Saved PyTorch model to {model_path}")
-
-    def info(self):
+    def info(self) -> None:
         print(f"Starting finetuning for {self.config.epochs} epochs...")
         print(f"  Model: {self.config.model_name}")
         print(f"  Learning rate: {self.config.learning_rate}")
         print(f"  Optimizer: AdamW (lr={self.config.learning_rate})")
-        print(f"  Device: {self.device}")
+        print(f"  Device: {DEVICE}")
         print("  Mixed precision: Enabled")
         print("-" * 50)
 
-    def get_model(self)->nn.Module:
+    def get_model(self) -> nn.Module:
         print(f"\nCreating model: {self.config.model_name}")
         model = create_model(self.config, num_classes=len(self.label_columns))
         model = setup_model_for_training(
-            self.config, model, device=self.device, class_freq=self.class_freq
+            self.config, model, class_freq=self.class_freq
         )
         return model

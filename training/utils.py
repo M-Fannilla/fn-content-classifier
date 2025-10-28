@@ -1,4 +1,6 @@
 import os
+import random
+
 import torch
 from sklearn.metrics import f1_score
 import numpy as np
@@ -54,3 +56,13 @@ def print_system_info():
         print(f"GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     print(f"CPU count: {os.cpu_count()}")
     print("=" * 60)
+
+def set_seed(seed: int) -> None:
+    """Set random seeds for reproducibility."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    # For deterministic behavior
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False

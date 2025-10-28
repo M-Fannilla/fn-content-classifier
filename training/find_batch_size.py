@@ -1,14 +1,14 @@
 import torch
-import gc
 from timm import create_model
-import pynvml
+from ..configs import TrainConfig
+from .. import DEVICE
 
-from training.config import Config
 
-
-def _get_gpu_memory(device="cuda"):
+def _get_gpu_memory():
     """Get total and free GPU memory in MB."""
-    if device != "cuda" or not torch.cuda.is_available():
+    import pynvml
+
+    if DEVICE != "cuda":
         return None, None
 
     pynvml.nvmlInit()
@@ -22,14 +22,15 @@ def _get_gpu_memory(device="cuda"):
 def _find_max_batch_size(
     model,
     input_size,
-    device="cuda",
     start=4,
 ):
     """
     Binary search for max batch size that fits in memory.
     Auto-bounds based on GPU memory.
     """
-    total_mem, free_mem = _get_gpu_memory(device)
+    import gc
+
+    total_mem, free_mem = _get_gpu_memory()
     if total_mem:
         print(f"GPU Memory: total={total_mem}MB, free={free_mem}MB")
 
@@ -42,7 +43,7 @@ def _find_max_batch_size(
     else:
         max_search = 1024  # generic fallback CPU/sim mode
 
-    model.to(device)
+    model.to(DEVICE)
     torch.cuda.empty_cache()
     gc.collect()
 
@@ -54,8 +55,8 @@ def _find_max_batch_size(
         mid = (low + high) // 2
 
         try:
-            dummy = torch.randn(mid, C, H, W, device=device)
-            with torch.amp.autocast(device):
+            dummy = torch.randn(mid, C, H, W, device=DEVICE)
+            with torch.amp.autocast(DEVICE):
                 out = model(dummy)
                 loss = out.sum()
             loss.backward()
@@ -85,12 +86,11 @@ def suggest_grad_accumulation(max_micro_bs, target_eff_bs=1024):
 
 
 def find_batch_size(
-    config: Config,
+    config: TrainConfig,
     num_classes: int,
-    device="cuda",
 ) -> int:
     """Compute optimal micro-batch + grad accumulation."""
-    if device != "cuda" or not torch.cuda.is_available():
+    if DEVICE != "cuda":
         print("Non-CUDA device detected; skipping batch size search.")
         return config.batch_size or 32
 
@@ -108,7 +108,6 @@ def find_batch_size(
     max_micro_bs = _find_max_batch_size(
         model=model,
         input_size=input_size,
-        device=device,
         start=16,
     )
     print(f"Max micro-batch fitting GPU: {max_micro_bs}")

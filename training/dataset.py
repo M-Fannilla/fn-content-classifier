@@ -9,7 +9,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 import matplotlib.pyplot as plt
 
 # Import custom modules
-from training.config import Config
+from ..configs import TrainConfig
 
 
 class MultilabelImageDataset(Dataset):
@@ -20,7 +20,7 @@ class MultilabelImageDataset(Dataset):
             image_paths: list[str],
             labels: np.ndarray,
             transform: T.Compose = None,
-            config: Config = None
+            config: TrainConfig = None
     ):
         self.image_paths = image_paths
         self.labels = labels
@@ -34,17 +34,7 @@ class MultilabelImageDataset(Dataset):
         image_path = self.image_paths[idx]
         label = self.labels[idx]
 
-        # Load image
-        try:
-            image = Image.open(image_path).convert('RGB')
-        except Exception as e:
-            print(f"Error loading image {image_path}: {e}")
-            # Return a black image if loading fails
-            image = Image.new(
-                'RGB',
-                (self.config.img_size, self.config.img_size),
-                (0, 0, 0)
-            )
+        image = Image.open(image_path).convert('RGB')
 
         if self.transform:
             image = self.transform(image)
@@ -52,7 +42,7 @@ class MultilabelImageDataset(Dataset):
         return image, torch.FloatTensor(label)
 
 
-def get_transforms(config: Config, is_training: bool = True) -> T.Compose:
+def get_transforms(config: TrainConfig, is_training: bool = True) -> T.Compose:
     """Get data transforms for training or validation."""
     if is_training:
         return T.Compose([
@@ -72,7 +62,7 @@ def get_transforms(config: Config, is_training: bool = True) -> T.Compose:
 
 
 def load_and_prepare_data(
-        config: Config
+        config: TrainConfig
 ) -> tuple[pd.DataFrame, list[str], np.ndarray]:
     """Load and prepare the dataset with stratified splitting."""
     # Load labels
@@ -91,7 +81,7 @@ def load_and_prepare_data(
 def create_stratified_splits(
         image_paths: list[str],
         labels: np.ndarray,
-        config: Config
+        config: TrainConfig
 ) -> tuple[list[str], list[str], np.ndarray, np.ndarray]:
     """Create stratified train/test splits for multilabel data."""
 
@@ -113,7 +103,7 @@ def create_stratified_splits(
     return train_paths, test_paths, train_labels, test_labels
 
 def create_data_loaders(
-        df, image_paths, labels, config: Config
+        df, image_paths, labels, config: TrainConfig
 ) -> tuple[DataLoader, DataLoader, list[str], np.ndarray, np.ndarray, np.ndarray]:
     """Create train and validation data loaders.
 
@@ -281,7 +271,6 @@ def plot_label_distribution(
     print("-"*80)
 
     for i, class_name in enumerate(label_columns):
-        orig_pct = original_percentages[i]
         train_pct = train_percentages[i]
         test_pct = test_percentages[i]
 
