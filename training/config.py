@@ -15,29 +15,19 @@ class Config:
 
     # Training settings
     seed: int = 42
-    batch_size: int = 64
+    batch_size: int = 32
     num_workers: int = os.cpu_count() // 2
-    threshold: float = 0.4
     img_size: int = 384
     model_name: str = 'convnextv2_tiny'
 
     # Finetuning settings
     weight_decay: float = 1e-4
-    learning_rate: float | None = None
-    epochs: int = 6
+    learning_rate: float = 1.25E-05
+    epochs: int = 15
 
     # Class imbalance handling
     bce_power: float = 0.5
     tau_logit_adjust: float = 0.5
-
-    # Learning rate reduction on plateau
-    lr_reduce_patience: int = 2
-    lr_reduce_factor: float = 0.5
-    lr_reduce_min_lr: float = 1e-7
-
-    # Early stopping settings
-    early_stopping_patience: int = 3
-    early_stopping_min_delta: float = 0.001
 
     # Weights & Biases settings
     use_wandb: bool = True
@@ -51,15 +41,9 @@ class Config:
     early_stop_metric: str = 'pr_auc_macro'
     best_model_metric: str = "pr_auc_macro"
 
-    lr_range_start = 1e-5
-    lr_range_end = 1e-2
-    lr_range_steps: int = 300
+    cosine_annealing_min: float = 0.1
 
     pretrained: bool = True
-
-    grad_accum_steps: int = 10
-    linear_start_factor: float = 0.01  # LR starts at 1% of base LR
-    cosine_annealing_min: float = 0.01  # LR → 1% of base LR at the end
 
     def __post_init__(self):
         Path(self.models_dir).mkdir(parents=True, exist_ok=True)

@@ -6,7 +6,7 @@ import torch
 # Import our custom modules
 from training.config import Config
 from training.dataset import create_data_loaders, load_and_prepare_data
-from training.find_batch_size import find_batch_size, suggest_grad_accumulation
+from training.find_lr import find_lr
 from training.trainer import Trainer
 from training.utils import (
     compute_class_frequency,
@@ -34,6 +34,7 @@ def main():
 
     # overwrite finetuning:
     config.num_epochs = 15
+    config.learning_rate = 0.00001891324268721734
     config.bce_power = 0.6788091730324309
     config.tau_logit_adjust = 0.8612782621731778
     config.use_wandb = True
@@ -57,19 +58,6 @@ def main():
     df, image_paths, labels = load_and_prepare_data(config=config)
     class_frequency = compute_class_frequency(df.drop(["file_name"], axis=1))
 
-    if not config.batch_size:
-        config.batch_size = find_batch_size(
-            config=config,
-            num_classes=len(labels),
-            device=str(device),
-        )
-
-    if not config.grad_accum_steps:
-        config.grad_accum_steps = suggest_grad_accumulation(
-            config.batch_size,
-            target_eff_bs=1024,
-        )
-
     (
         train_loader,
         val_loader,
@@ -79,15 +67,14 @@ def main():
         test_labels
     ) = create_data_loaders(df, image_paths, labels, config)
 
-    # Create trainer
-    print("\nInitializing trainer...")
     trainer = Trainer(
         class_freq=class_frequency,
         config=config,
         train_loader=train_loader,
         val_loader=val_loader,
         label_columns=label_columns,
-        device=str(device)
+        device=str(device),
+        init_wandb=True
     )
 
     # Print trainer information

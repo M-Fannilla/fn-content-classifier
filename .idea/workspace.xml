@@ -5,9 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="remove build">
+      <change afterPath="$PROJECT_DIR$/training/find_lr.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/find_lr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convert_to_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_to_onnx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/model_train.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/training/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wandb_sweep_config.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +47,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "SHELLCHECK.PATH": "/Users/milosz/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/milosz/Projects/fn-classifier-final/inference",
+    "last_opened_file_path": "/Users/milosz/Projects/fn-classifier-final/training",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -56,8 +64,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/inference" />
       <recent name="$PROJECT_DIR$/training" />
+      <recent name="$PROJECT_DIR$/inference" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -83,7 +91,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="18301000" />
+      <workItem from="1761586256358" duration="31279000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />

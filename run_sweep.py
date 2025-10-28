@@ -51,11 +51,10 @@ def train_with_sweep():
     )
 
     config = wandb.config
-
-    # Create configuration object with sweep parameters
-
     sweep_config = Config(
         model_name="convnextv2_tiny",
+        epochs=config.epochs,
+        learning_rate=config.learning_rate,
         bce_power=config.bce_power,
         tau_logit_adjust=config.tau_logit_adjust,
         weight_decay=config.weight_decay,

@@ -16,4 +16,3 @@ gradio
 onnx
 onnxruntime
 torch-lr-finder
-pynvml

@@ -6,12 +6,16 @@ metric:
 early_terminate:
   type: hyperband
   min_iter: 3     # check after epoch 3
-  max_iter: 15    # your full number of epochs
+  max_iter: 6    # your full number of epochs
   eta: 2          # kill ~50% of weak configs
   strict: true    # allow aggressive termination
 parameters:
-  # model_name:
-  #   values: [ "convnextv2_nano", "convnextv2_tiny" ]
+  epochs:
+    value: 6
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1e-6
+    max: 1e-4
   bce_power:
     distribution: uniform
     min: 0.0

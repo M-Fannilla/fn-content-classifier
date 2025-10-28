@@ -69,11 +69,16 @@ def export_model(
     return onnx_path
 
 if __name__ == "__main__":
-    model_name = 'wbce_action_convnextv2_tiny_32_384'
-    model, model_config = load_custom_model(str(MODEL_ROOT / f'{model_name}.pth'))
-    save_labels(model_name, model_config.labels)
-    export_path = export_model(
-        model=model,
-        image_size=model_config.image_size,
-        model_name=model_config.model_name,
-    )
+    model_names = [
+        "wbce_action_convnextv2_tiny_32_384",
+        "wbce_bodyparts_convnextv2_tiny_32_384",
+    ]
+
+    for model_name in model_names:
+        model, model_config = load_custom_model(str(MODEL_ROOT / f'{model_name}.pth'))
+        save_labels(model_name, model_config.labels)
+        export_path = export_model(
+            model=model,
+            image_size=model_config.image_size,
+            model_name=model_config.model_name,
+        )
