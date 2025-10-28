@@ -63,6 +63,8 @@ def main():
             num_classes=len(labels),
             device=str(device),
         )
+
+    if not config.grad_accum_steps:
         config.grad_accum_steps = suggest_grad_accumulation(
             config.batch_size,
             target_eff_bs=1024,

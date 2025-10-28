@@ -15,7 +15,7 @@ class Config:
 
     # Training settings
     seed: int = 42
-    batch_size: int = None
+    batch_size: int = 64
     num_workers: int = os.cpu_count() // 2
     threshold: float = 0.4
     img_size: int = 384
@@ -57,7 +57,7 @@ class Config:
 
     pretrained: bool = True
 
-    grad_accum_steps: int = 1
+    grad_accum_steps: int = 10
     linear_start_factor: float = 0.01  # LR starts at 1% of base LR
     cosine_annealing_min: float = 0.01  # LR → 1% of base LR at the end
 
