@@ -9,8 +9,7 @@ from .train import train_main
 
 def load_sweep_config() -> dict:
     with open("sweep_action.yaml", "r") as f:
-        sweep_config = yaml.safe_load(f)
-    return sweep_config
+        return yaml.safe_load(f)
 
 
 def get_sweep(sweep_config: dict) -> tuple[Sweep, str]:
@@ -40,8 +39,9 @@ def extract_train_config(sweep: Sweep, best_metric_name: str) -> TrainConfig:
     return TrainConfig(**best_dict)
 
 if __name__ == "__main__":
-    sweep_config = load_sweep_config()
-    sweep, best_metric_name = get_sweep(sweep_config)
-    best_train_config = extract_train_config(sweep, best_metric_name)
+    config = load_sweep_config()
+    sweep_obj, metric_name = get_sweep(config)
+    best_train_config = extract_train_config(sweep_obj, metric_name)
+    best_train_config.info()
     train_main(best_train_config)
 

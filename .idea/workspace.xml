@@ -5,39 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="remove build">
-      <change afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/responses.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sweep_bodyparts.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/train_best_sweep.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.cursorignore" beforeDir="false" afterPath="$PROJECT_DIR$/.cursorignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convert_to_onnx.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference.Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/inference.Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/gradio_app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/inference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/model_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/model_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/inference/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference/visualization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sweep_action.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/sweep_action.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sweep_bodyparts.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/sweep_bodyparts.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/find_batch_size.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/find_batch_size.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/find_lr.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/find_lr.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/find_lr.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/find_lr.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/model_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/model_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/model_train.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/training/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wandb_sweep_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/sweep_action.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_best_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_best_sweep.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +119,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="49916000" />
+      <workItem from="1761586256358" duration="51021000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />

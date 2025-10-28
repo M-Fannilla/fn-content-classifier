@@ -73,11 +73,12 @@ def train_main(config: TrainConfig) -> None:
     print(f"Best validation {trainer.best_model_metric}: {trainer.best_metric_value:.4f}")
 
 if __name__ == "__main__":
-    config = TrainConfig()
-    config.num_epochs = 15
-    config.learning_rate = 0.00001891324268721734
-    config.bce_power = 0.6788091730324309
-    config.tau_logit_adjust = 0.8612782621731778
-    config.use_wandb = True
+    train_config = TrainConfig()
 
-    train_main(config=config)
+    train_config.num_epochs = 15
+    train_config.learning_rate = 0.00001891324268721734
+    train_config.bce_power = 0.6788091730324309
+    train_config.tau_logit_adjust = 0.8612782621731778
+    train_config.use_wandb = True
+
+    train_main(config=train_config)
