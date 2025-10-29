@@ -8,12 +8,13 @@ import io
 from concurrent.futures import ThreadPoolExecutor
 
 class ImageProcessor:
-    def __init__(self, target_size: int):
+    def __init__(self, target_size: int, batch_workers: int):
         self.target_size = target_size
+        self.batch_workers = batch_workers
 
     def process(
             self,
-            image: Union[Image.Image, bytes, str],
+            image: str | bytes | Image.Image,
     ) -> np.ndarray:
         """
         Pipeline:
@@ -28,6 +29,7 @@ class ImageProcessor:
         # Load image if needed
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image))
+
         elif isinstance(image, str):
             image = Image.open(image)
 
@@ -83,9 +85,8 @@ class ImageProcessor:
     def process_batch(
             self,
             images: list[Union[Image.Image, bytes, str]],
-            workers: int = 4,
     ) -> np.ndarray:
-        with ThreadPoolExecutor(max_workers=workers) as executor:
+        with ThreadPoolExecutor(max_workers=self.batch_workers) as executor:
             futures = [
                 executor.submit(self.process, image)
                 for image in images

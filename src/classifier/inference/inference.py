@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 import numpy as np
 from .model_loader import ModelManager, ModelsEnum
 
@@ -9,7 +8,7 @@ class Inference:
     def __init__(self, model_manager: ModelManager):
         self.model_manager = model_manager
 
-    def run_inference(self, model: ModelsEnum, image_array: np.ndarray) -> dict[str, float]:
+    def predict(self, model: ModelsEnum, image_array: np.ndarray) -> dict[str, float]:
         """
         Run inference on a single model.
 
@@ -18,12 +17,10 @@ class Inference:
             image_array: Preprocessed image array
 
         Returns:
-            Dictionary mapping labels to probabilities (rounded to 3 decimals)
+            dictionary mapping labels to probabilities (rounded to 3 decimals)
         """
-
-        # Load model and labels
-        session = self.model_manager.models.get(model)
-        labels = self.model_manager.labels.get(model)
+        session = self.model_manager.get_onnx_session(model)
+        labels = self.model_manager.get_labels(model)
 
         if not session or not labels:
             raise ValueError(f"Model or labels for '{model.value}' not loaded.")
@@ -52,16 +49,11 @@ class Inference:
         return label_probs
 
 
-    def predict_both_models(
-            self,
-            model_manager: ModelManager,
-            image_array: np.ndarray
-    ) -> Dict[str, Dict[str, float]]:
+    def predict_all(self, image_array: np.ndarray) -> dict[str, float]:
         """
         Run inference on both action and bodyparts models.
 
         Args:
-            model_manager: ModelManager instance
             image_array: Preprocessed image array
 
         Returns:
@@ -69,9 +61,9 @@ class Inference:
         """
         results = {}
 
-        for model_name in model_manager.get_all_models():
+        for model_name in self.model_manager.get_all_models():
             try:
-                results[model_name] = self.run_inference(model_name, image_array)
+                results[model_name] = self.predict(model_name, image_array)
             except Exception as e:
                 logger.error(f"Error running inference on {model_name}: {e}")
                 results[model_name] = {}

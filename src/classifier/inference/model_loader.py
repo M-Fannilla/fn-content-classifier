@@ -2,6 +2,7 @@
 import enum
 import logging
 
+import numpy as np
 import onnxruntime as ort
 
 from ..configs import OnnxModelConfig
@@ -21,7 +22,7 @@ class ModelManager:
     
     def __init__(self):
         self.models: dict[ModelsEnum, ort.InferenceSession] = {}
-        self.model_configs = {
+        self.model_configs: dict[ModelsEnum, OnnxModelConfig] = {
             ModelsEnum.ACTION: OnnxModelConfig.load_config('action'),
             ModelsEnum.BODYPARTS: OnnxModelConfig.load_config('bodyparts'),
         }
@@ -31,18 +32,18 @@ class ModelManager:
         for model_name in self.get_all_models():
             self.load_model(model_name)
 
-    def load_model(self, model_enum: ModelsEnum) -> None:
+    def load_model(self, model: ModelsEnum) -> None:
         """Load an ONNX model into an inference session."""
-        if model_enum in self.models:
+        if model in self.models:
             return
         
-        model_type = self.model_configs[model_enum].model_type
+        model_type = self.model_configs[model].model_type
         
         providers = ['CPUExecutionProvider']
         if ort.get_device().lower() == 'gpu':
             providers.insert(0, 'CUDAExecutionProvider')
         
-        self.models[model_enum] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
+        self.models[model] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
         logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
 
     def get_all_models(self) -> list[ModelsEnum]:
@@ -60,7 +61,18 @@ class ModelManager:
                     raise ValueError("Inconsistent image sizes across models.")
         return image_size
 
-    def get_labels(self, model_enum: ModelsEnum) -> list[str]:
+    def get_threshold(self, model: ModelsEnum) -> np.ndarray:
         """Get labels for a model."""
-        return self.model_configs[model_enum].labels
+        threshold = self.model_configs[model].threshold
 
+        if not isinstance(threshold, np.ndarray):
+            threshold = np.array(threshold, dtype=np.float32)
+
+        return threshold
+
+    def get_labels(self, model: ModelsEnum) -> list[str]:
+        """Get labels for a model."""
+        return self.model_configs[model].labels
+
+    def get_onnx_session(self, model: ModelsEnum) -> ort.InferenceSession:
+        return self.models.get(model)

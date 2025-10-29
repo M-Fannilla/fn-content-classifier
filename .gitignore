@@ -3,5 +3,6 @@ __pycache__/
 .idea/
 models/torch/
 wandb/
+fn-content-dataset/
 src/classifier.egg-info/
 **/workspace.xml
