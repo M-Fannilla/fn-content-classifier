@@ -214,6 +214,7 @@ class Trainer:
 
                 if save_model:
                     self.save_checkpoint(epoch=epoch)
+                    self.save_onnx(epoch=epoch)
 
             # Log metrics to wandb
             if self.config.use_wandb:
@@ -289,7 +290,7 @@ class Trainer:
         """Save the trained model."""
         model_path, model_config = self._torch_model_config(epoch=epoch)
         model_config.export_to_onnx(model=self.model)
-        model_config.save_as_onnx_config()
+        model_config.save_as_onnx_config(epoch=epoch)
         return model_config
 
     def save_checkpoint(self, epoch: int | str) -> TorchModelConfig:

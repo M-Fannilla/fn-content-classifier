@@ -112,13 +112,13 @@ class TorchModelConfig:
             }
         )
 
-    def save_as_onnx_config(self) -> None:
+    def save_as_onnx_config(self, epoch: int | str) -> None:
         save_path = OnnxModelConfig(
             model_type=self.model_type,
             labels=self.labels,
             image_size=self.image_size,
             threshold=self.threshold,
-        ).save_config()
+        ).save_config(epoch=epoch)
         print(f"[✓] Saved config for model: {save_path}")
 
     def export_to_onnx(self, model: nn.Module) -> None:
@@ -152,8 +152,8 @@ class OnnxModelConfig:
     image_size: int
     threshold: np.ndarray | list[float]
 
-    def save_config(self) -> Path:
-        save_path = ONNX_DIR / f"{self.model_type}.json"
+    def save_config(self, epoch: int | str) -> Path:
+        save_path = ONNX_DIR / f"{str(epoch)}_{self.model_type}.json"
 
         if isinstance(self.threshold, np.ndarray):
             self.threshold = self.threshold.tolist()
