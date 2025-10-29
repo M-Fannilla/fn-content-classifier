@@ -9,7 +9,7 @@ from .train import train_main
 
 
 def load_sweep_config(model_type: str) -> dict:
-    with open(f"{model_type}_action.yaml", "r") as f:
+    with open(f"sweep_{model_type}.yaml", "r") as f:
         return yaml.safe_load(f)
 
 
