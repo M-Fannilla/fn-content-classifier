@@ -10,13 +10,13 @@ RUN apt-get update && \
     && apt-get clean
 
 # Copy requirements first for better caching
-COPY inference/requirements.txt /app/requirements.txt
+COPY src/classifier/inference/requirements.txt /app/requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy inference code
-COPY inference/ /app/inference/
+COPY src/classifier/inference/ /app/inference/
 
 # Set Python path
 ENV PYTHONPATH=/app
