@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="pkg versioning" />
+    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="pkg versioning">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/dataset.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -112,7 +115,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="56420000" />
+      <workItem from="1761586256358" duration="57077000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />
@@ -154,7 +157,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761728134794</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="pkg versioning">
+      <option name="closed" value="true" />
+      <created>1761728229769</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1761728229769</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

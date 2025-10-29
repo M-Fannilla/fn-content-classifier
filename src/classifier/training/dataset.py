@@ -9,6 +9,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 import matplotlib.pyplot as plt
 
 # Import custom modules
+from .. import DATASETS_DIR
 from ..configs import TrainConfig
 
 
@@ -73,7 +74,7 @@ def load_and_prepare_data(
     labels = df[label_columns].values.astype(np.float32)
 
     # Create image paths
-    image_paths = [os.path.join(config.dataset_src, filename) for filename in df['file_name']]
+    image_paths = [str(DATASETS_DIR / filename) for filename in df['file_name']]
 
     return df, image_paths, labels
 
