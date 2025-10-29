@@ -1,6 +1,5 @@
 import argparse
 import time
-import torch
 
 # Import our custom modules
 from .configs import TrainConfig
@@ -27,10 +26,6 @@ def train_main(config: TrainConfig) -> None:
     # Set random seed for reproducibility
     set_seed(config.seed)
     print(f"Random seed set to: {config.seed}")
-
-    # Set device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"\nUsing device: {device}")
 
     # Create data loaders
     print("\nLoading dataset...")

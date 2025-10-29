@@ -21,8 +21,6 @@ class TrainConfig:
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
 
-    label_dataframe: str = f"{DATASETS_DIR}/{model_type}_labels.csv"
-
     # Training settings
     seed: int = 42
     batch_size: int = 32
@@ -52,8 +50,12 @@ class TrainConfig:
     cosine_annealing_min: float = 0.1
 
     pretrained: bool = True
-    stratified_data: bool = False
+    stratified_data: bool = True
     limit_size: int  = 1000
+
+    @property
+    def label_dataframe(self):
+        return f"{DATASETS_DIR}/{self.model_type}_labels.csv"
 
     @property
     def model_catalog(self) -> dict[str, int]:
