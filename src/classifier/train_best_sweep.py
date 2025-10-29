@@ -37,9 +37,7 @@ def extract_train_config(sweep: Sweep, best_metric_name: str) -> TrainConfig:
     config_params = set(TrainConfig().valid_params())
     same_keys = set(best_dict.keys()).intersection(config_params)
 
-    best_dict = {k: v['value'] for k, v in best_dict.items() if k in same_keys}
-
-    print(best_dict)
+    best_dict = {k: v for k, v in best_dict.items() if k in same_keys}
 
     return TrainConfig(**best_dict)
 
