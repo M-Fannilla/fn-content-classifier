@@ -52,7 +52,7 @@ class TrainConfig:
     cosine_annealing_min: float = 0.1
 
     pretrained: bool = True
-    stratified_data: bool = True
+    stratified_data: bool = False
     limit_size: int  = 1000
 
     @property
