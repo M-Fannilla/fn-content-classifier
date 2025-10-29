@@ -13,6 +13,7 @@ from .training.trainer import Trainer
 WANDB_ENTITY: str | None = None
 WANDB_PROJECT: str | None = None
 EPOCHS: int | None = None
+MODEL_TYPE: str | None = None
 
 def run_sweep(model_type: str):
     """Run a wandb sweep for hyperparameter optimization."""
@@ -58,7 +59,7 @@ def run_sweep(model_type: str):
 
 def train_with_sweep():
     """Training function for wandb sweep."""
-    global WANDB_ENTITY, WANDB_PROJECT, EPOCHS
+    global WANDB_ENTITY, WANDB_PROJECT, EPOCHS, MODEL_TYPE
 
     # Initialize wandb run with config values
     wandb.init(
@@ -69,6 +70,7 @@ def train_with_sweep():
     # Get hyperparameters from wandb
     config = wandb.config
     sweep_config = TrainConfig(
+        model_type=MODEL_TYPE,
         model_name="convnextv2_tiny",
         epochs=EPOCHS or config.epochs,
         learning_rate=config.learning_rate,
@@ -119,7 +121,7 @@ if __name__ == "__main__":
     )
 
     parsed_args = args.parse_args()
-    model_to_sweep = parsed_args.model_type
+    MODEL_TYPE = parsed_args.model_type
 
     # Check if wandb is logged in
     if not wandb.api.api_key:
@@ -127,4 +129,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Run the sweep
-    run_sweep(model_type=model_to_sweep)
+    run_sweep(model_type=MODEL_TYPE)
