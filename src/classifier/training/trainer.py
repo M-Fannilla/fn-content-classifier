@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -239,6 +241,7 @@ class Trainer:
 
         if save_model:
             self.save_checkpoint(epoch='final')
+            self.save_onnx(epoch='final')
 
         # Finish wandb run
         if self.config.use_wandb:
@@ -266,21 +269,33 @@ class Trainer:
 
         return avg_loss, metrics
 
-    def save_checkpoint(self, epoch: int | str) -> TorchModelConfig:
+    def _torch_model_config(self, epoch: int | str) -> tuple[Path, TorchModelConfig]:
         """Save the trained model."""
         epoch = str(epoch)
         filename = self.best_model_name
         model_path = (
             TORCH_MODELS_DIR / f"{epoch}_{filename}.pth" if epoch else f"{filename}.pth"
         )
-        model_config = TorchModelConfig(
+
+        return model_path, TorchModelConfig(
             model_type=self.config.model_type,
             model_state_dict=self.best_model_state,
             labels=self.label_columns,
             image_size=self.config.img_size,
             threshold=self.best_threshold,
         )
-        model_config.save_torch_model(save_path=model_path)
+
+    def save_onnx(self, epoch: int | str) -> TorchModelConfig:
+        """Save the trained model."""
+        model_path, model_config = self._torch_model_config(epoch=epoch)
+        model_config.export_to_onnx(model=self.model)
+        model_config.save_as_onnx_config()
+        return model_config
+
+    def save_checkpoint(self, epoch: int | str) -> TorchModelConfig:
+        """Save the trained model."""
+        model_path, model_config = self._torch_model_config(epoch)
+        model_config.save_torch_model(save_path=str(model_path))
         return model_config
 
     def info(self) -> None:
