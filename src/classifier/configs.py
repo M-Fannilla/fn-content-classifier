@@ -52,6 +52,8 @@ class TrainConfig:
     cosine_annealing_min: float = 0.1
 
     pretrained: bool = True
+    stratified_data: bool = True
+    limit_size: int  = 1000
 
     @property
     def model_catalog(self) -> dict[str, int]:

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import torch
+from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
@@ -116,11 +117,20 @@ def create_data_loaders(
         test_labels: Test dataset labels
     """
     # Create stratified splits
-    train_paths, test_paths, train_labels, test_labels = create_stratified_splits(
-        image_paths=image_paths,
-        labels=labels,
-        config=config
-    )
+    if config.stratified_data:
+        train_paths, test_paths, train_labels, test_labels = create_stratified_splits(
+            image_paths=image_paths,
+            labels=labels,
+            config=config
+        )
+    else:
+        _limit_size = config.limit_size
+        train_paths, test_paths, train_labels, test_labels = train_test_split(
+            image_paths[:_limit_size], labels[:_limit_size],
+            test_size=config.train_size_perc,
+            train_size=config.test_size_perc,
+        )
+
 
     # Get label columns for later use
     label_columns = [col for col in df.columns if col != 'file_name']
