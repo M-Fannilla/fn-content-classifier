@@ -4,3 +4,4 @@ __pycache__/
 models/torch/
 wandb/
 src/classifier.egg-info/
+**/workspace.xml
