@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import wandb
+import argparse
 
 # Import training modules
 from .configs import TrainConfig
@@ -109,7 +110,17 @@ def train_with_sweep():
     print(f"Training completed! Best {trainer.best_model_metric}: {trainer.best_metric_value:.4f}")
 
 if __name__ == "__main__":
-    model_to_sweep = "action"
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        "--model_type",
+        type=str,
+        default="action",
+        help="Type of model to sweep (e.g., 'action', 'bodyparts')",
+    )
+
+    parsed_args = args.parse_args()
+    model_to_sweep = parsed_args.model_type
+
     # Check if wandb is logged in
     if not wandb.api.api_key:
         print("Please run 'wandb login' first!")

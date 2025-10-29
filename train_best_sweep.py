@@ -1,3 +1,4 @@
+import argparse
 import json
 
 import wandb
@@ -7,8 +8,8 @@ from .configs import TrainConfig
 from .train import train_main
 
 
-def load_sweep_config() -> dict:
-    with open("sweep_action.yaml", "r") as f:
+def load_sweep_config(model_type: str) -> dict:
+    with open(f"{model_type}_action.yaml", "r") as f:
         return yaml.safe_load(f)
 
 
@@ -39,7 +40,18 @@ def extract_train_config(sweep: Sweep, best_metric_name: str) -> TrainConfig:
     return TrainConfig(**best_dict)
 
 if __name__ == "__main__":
-    config = load_sweep_config()
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        "--model_type",
+        type=str,
+        default="action",
+        help="Type of model to sweep (e.g., 'action', 'bodyparts')",
+    )
+
+    parsed_args = args.parse_args()
+    model_to_sweep = parsed_args.model_type
+
+    config = load_sweep_config(model_type=model_to_sweep)
     sweep_obj, metric_name = get_sweep(config)
     best_train_config = extract_train_config(sweep_obj, metric_name)
     best_train_config.info()

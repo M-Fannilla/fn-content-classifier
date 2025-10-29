@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="remove build">
+      <change afterPath="$PROJECT_DIR$/scripts/pull_git.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training.Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/training.Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_best_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_best_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/training/model_train.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +118,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="51881000" />
+      <workItem from="1761586256358" duration="52944000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />
