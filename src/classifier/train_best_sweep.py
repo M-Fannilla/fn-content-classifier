@@ -57,5 +57,5 @@ if __name__ == "__main__":
     sweep_obj, metric_name = get_sweep(config)
     best_train_config = extract_train_config(sweep_obj, metric_name)
     best_train_config.info()
-    # train_main(best_train_config)
+    train_main(best_train_config)
 

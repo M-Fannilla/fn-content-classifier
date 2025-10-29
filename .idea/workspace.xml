@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="wip">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/classifier/train_best_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/train_best_sweep.py" afterDir="false" />
-    </list>
+    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="pkg versioning" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +112,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="56327000" />
+      <workItem from="1761586256358" duration="56420000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />
@@ -151,7 +146,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761727471252</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="pkg versioning">
+      <option name="closed" value="true" />
+      <created>1761728134794</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1761728134794</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,7 +163,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="remove build" />
     <MESSAGE value="wip" />
-    <option name="LAST_COMMIT_MESSAGE" value="wip" />
+    <MESSAGE value="pkg versioning" />
+    <option name="LAST_COMMIT_MESSAGE" value="pkg versioning" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/fn_classifier_final$convert_to_onnx.coverage" NAME="convert_to_onnx Coverage Results" MODIFIED="1761664917900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
