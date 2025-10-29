@@ -19,15 +19,11 @@ class ModelsEnum(enum.Enum):
 class ModelManager:
     """Manages ONNX models and their labels."""
     
-    def __init__(
-            self,
-            action_model_name: str,
-            bodyparts_model_name: str,
-    ):
+    def __init__(self):
         self.models: dict[ModelsEnum, ort.InferenceSession] = {}
         self.model_configs = {
-            ModelsEnum.ACTION: OnnxModelConfig.load_config(action_model_name),
-            ModelsEnum.BODYPARTS: OnnxModelConfig.load_config(bodyparts_model_name),
+            ModelsEnum.ACTION: OnnxModelConfig.load_config('action'),
+            ModelsEnum.BODYPARTS: OnnxModelConfig.load_config('bodyparts'),
         }
 
     def load_all(self):
@@ -40,14 +36,14 @@ class ModelManager:
         if model_enum in self.models:
             return
         
-        model_name = self.model_configs[model_enum].model_name
+        model_type = self.model_configs[model_enum].model_type
         
         providers = ['CPUExecutionProvider']
         if ort.get_device().lower() == 'gpu':
             providers.insert(0, 'CUDAExecutionProvider')
         
-        self.models[model_enum] = ort.InferenceSession(ONNX_DIR / model_name, providers=providers)
-        logger.info(f"Model '{model_name}' from {ONNX_DIR} loaded successfully")
+        self.models[model_enum] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
+        logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
 
     def get_all_models(self) -> list[ModelsEnum]:
         """Get list of available model names."""

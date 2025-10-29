@@ -137,6 +137,7 @@ class TorchModelConfig:
             do_constant_folding=True,
             input_names=["x"],
             output_names=["output"],
+            dynamo=False,
             dynamic_shapes={
                 "x": {0: "batch"},
             },
