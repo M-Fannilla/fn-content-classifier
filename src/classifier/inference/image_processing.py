@@ -1,11 +1,23 @@
 """Image preprocessing utilities."""
 from functools import cached_property
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
 from typing import Union
 import io
 from concurrent.futures import ThreadPoolExecutor
+from google.cloud.storage import Bucket, transfer_manager
+
+class GCPImageLoader:
+    def __init__(self, download_dir: Path = Path('./temp')):
+        self.download_dir = download_dir
+
+    def download_images(self, bucket: Bucket, *image_paths: str):
+        transfer_manager.download_many_to_path(
+            bucket, image_paths,
+            destination_directory=str(self.download_dir),
+        )
 
 class ImageProcessor:
     def __init__(self, target_size: int, batch_workers: int):
@@ -16,20 +28,8 @@ class ImageProcessor:
             self,
             image: str | bytes | Image.Image,
     ) -> np.ndarray:
-        """
-        Pipeline:
-        1. Load and convert to RGB
-        2. Scale proportionally to fit within target_size
-        3. Add black padding to center the image
-        4. Normalize to [0, 1]
-        5. Apply ImageNet normalization (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        6. Convert to CHW format
-        7. Add batch dimension
-        """
-        # Load image if needed
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image))
-
         elif isinstance(image, str):
             image = Image.open(image)
 

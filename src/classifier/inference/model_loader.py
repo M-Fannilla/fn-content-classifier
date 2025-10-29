@@ -19,17 +19,21 @@ class ModelsEnum(enum.Enum):
 
 class ModelManager:
     """Manages ONNX models and their labels."""
-    
-    def __init__(self):
-        self.models: dict[ModelsEnum, ort.InferenceSession] = {}
-        self.model_configs: dict[ModelsEnum, OnnxModelConfig] = {
-            ModelsEnum.ACTION: OnnxModelConfig.load_config('action'),
-            ModelsEnum.BODYPARTS: OnnxModelConfig.load_config('bodyparts'),
+    models: dict[ModelsEnum, ort.InferenceSession] = {}
+    model_configs: dict[ModelsEnum, OnnxModelConfig] | None = None
+
+    def __init__(self, *models_to_load: ModelsEnum):
+        self.models_to_load = models_to_load
+
+    def load_configs(self):
+        self.model_configs = {
+            model_type:  OnnxModelConfig.load_config(model_type.value) for model_type in self.models_to_load
         }
 
     def load_all(self):
         """Load all models and their labels."""
-        for model_name in self.get_all_models():
+        self.load_configs()
+        for model_name in self.models_to_load:
             self.load_model(model_name)
 
     def load_model(self, model: ModelsEnum) -> None:
@@ -42,9 +46,13 @@ class ModelManager:
         providers = ['CPUExecutionProvider']
         if ort.get_device().lower() == 'gpu':
             providers.insert(0, 'CUDAExecutionProvider')
-        
-        self.models[model] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
-        logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
+
+        try:
+            self.models[model] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
+            logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
+
+        except Exception:
+            logger.error(f"Model '{model_type}' from {ONNX_DIR} could not be loaded")
 
     def get_all_models(self) -> list[ModelsEnum]:
         """Get list of available model names."""
