@@ -28,14 +28,16 @@ def get_sweep(sweep_config: dict) -> tuple[Sweep, str]:
 
 def extract_train_config(sweep: Sweep, best_metric_name: str) -> TrainConfig:
     best_run = sweep.best_run(order=best_metric_name)
-    best_parameters = best_run.config
-    best_dict: dict = json.loads(best_parameters)
-    best_dict.pop('_wandb')
+    best_dict = best_run.config
 
-    config_params = set(TrainConfig().valid_params())
-    same_keys = set(best_dict.keys()).intersection(config_params)
+    if isinstance(best_dict, str):
+        best_dict: dict = json.loads(best_dict)
+        best_dict.pop('_wandb')
 
-    best_dict = {k: v for k, v in best_dict.items() if k in same_keys}
+        config_params = set(TrainConfig().valid_params())
+        same_keys = set(best_dict.keys()).intersection(config_params)
+
+        best_dict = {k: v for k, v in best_dict.items() if k in same_keys}
 
     return TrainConfig(**best_dict)
 

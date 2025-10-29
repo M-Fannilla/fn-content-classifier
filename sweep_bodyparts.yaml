@@ -1,0 +1,31 @@
+program: bodyparts_classifier
+method: bayes
+metric:
+  name: best_pr_auc_macro
+  goal: maximize
+early_terminate:
+  type: hyperband
+  min_iter: 3     # check after epoch 3
+  max_iter: 8    # your full number of epochs
+  eta: 2          # kill ~50% of weak configs
+  strict: true    # allow aggressive termination
+parameters:
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1e-6
+    max: 1e-4
+  bce_power:
+    distribution: uniform
+    min: 0.0
+    max: 1.0
+  tau_logit_adjust:
+    distribution: uniform
+    min: 0.0
+    max: 1.0
+  weight_decay:
+    distribution: uniform
+    min: 0.0
+    max: 1.0
+sweep_id:
+wandb_entity: miloszbertman
+wandb_project: fn-content-classifier
