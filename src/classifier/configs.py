@@ -130,6 +130,8 @@ class TorchModelConfig:
         example_input = torch.randn(*image_shape, device=DEVICE)
         onnx_path = ONNX_DIR / f"{self.model_type}.onnx"
 
+        print("Exporting ONNX with dynamic batch size...")
+
         torch.onnx.export(
             model,
             example_input,
@@ -139,11 +141,13 @@ class TorchModelConfig:
             do_constant_folding=True,
             input_names=["x"],
             output_names=["output"],
-            dynamo=False,
-            dynamic_shapes={
+            dynamic_axes={
                 "x": {0: "batch"},
+                "output": {0: "batch"},
             },
+            dynamo=False,
         )
+
         print(f"[✓] Saved ONNX model: {onnx_path}")
         return onnx_path
 
