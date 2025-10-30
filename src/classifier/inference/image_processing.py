@@ -1,28 +1,29 @@
-"""Image preprocessing utilities."""
 from functools import cached_property
-from pathlib import Path
-
 import numpy as np
 from PIL import Image
 from typing import Union
 import io
 from concurrent.futures import ThreadPoolExecutor
-from google.cloud.storage import Bucket, transfer_manager
-
-class GCPImageLoader:
-    def __init__(self, download_dir: Path = Path('./temp')):
-        self.download_dir = download_dir
-
-    def download_images(self, bucket: Bucket, *image_paths: str):
-        transfer_manager.download_many_to_path(
-            bucket, image_paths,
-            destination_directory=str(self.download_dir),
-        )
+import requests
 
 class ImageProcessor:
     def __init__(self, target_size: int, batch_workers: int):
         self.target_size = target_size
         self.batch_workers = batch_workers
+
+    def _download_image_from_url(self, url: str) -> str:
+        image_name = url.split('/')[-1]
+        save_path = f'./{image_name}'
+
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # raises if status != 200
+
+        with open(save_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+        print(f"[✓] Image saved to {save_path}")
+        return save_path
 
     def process(
             self,
@@ -30,7 +31,11 @@ class ImageProcessor:
     ) -> np.ndarray:
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image))
+
         elif isinstance(image, str):
+            if image.startswith('http'):
+                image = self._download_image_from_url(image)
+
             image = Image.open(image)
 
         # Ensure RGB

@@ -1,11 +1,13 @@
-from .inference_config import InferenceConfig
+from .configs import InferenceConfig
 from .image_processing import ImageProcessor
 from .inference import Inference
 from .model_loader import ModelManager, ModelsEnum
 
 inference_config = InferenceConfig()
-
-model_manager = ModelManager(ModelsEnum.ACTION)
+model_manager = ModelManager(
+    ModelsEnum.ACTION,
+    ModelsEnum.BODYPARTS
+)
 model_manager.load_all()
 
 inference = Inference(
@@ -18,21 +20,18 @@ image_processor = ImageProcessor(
     batch_workers=inference_config.IMAGE_PROCESSING_WORKERS,
 )
 
-
-if __name__ == "__main__":
+def image_inference():
     image_to_predict = [
-        '/Users/milosz/Projects/fn-content-dataset/compiled/1.jpg',
-        # '/Users/milosz/Projects/3.webp',
-        '/Users/milosz/Projects/21344319-onlyfans.jpg',
+        'https://www.porndos.com/images/thumb/7255.webp',
     ]
     np_images_batch = image_processor.process_batch(image_to_predict)
-
-    results = inference.predict_all(
+    return inference.predict_all(
         images_paths=image_to_predict,
         image_array=np_images_batch,
     )
 
-    # out = dict(zip(image_to_predict, results))
-
+if __name__ == "__main__":
     from pprint import pprint
+
+    results = image_inference()
     pprint(results)

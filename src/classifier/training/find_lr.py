@@ -1,6 +1,6 @@
 from torch_lr_finder import LRFinder
 
-from .. import DEVICE
+from . import DEVICE
 from .trainer import Trainer
 
 

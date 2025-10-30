@@ -10,9 +10,9 @@ import wandb
 import torch
 
 # Import custom modules
-from .. import TORCH_MODELS_DIR, DEVICE
-from ..model import ClassifierModel
-from ..configs import TrainConfig, TorchModelConfig
+from . import TORCH_MODELS_DIR, DEVICE
+from .model import ClassifierModel
+from .configs import TrainConfig, TorchModelConfig
 from .losses import WeightedBCELoss
 from .metrics import MultilabelMetrics
 from .model_helpers import create_model, setup_model_for_training

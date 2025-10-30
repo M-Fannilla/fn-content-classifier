@@ -7,7 +7,10 @@ name = "classifier"
 requires-python = ">=3.11"
 version = "0.0.1"
 description = "A package to train and inference image classification models."
-dependencies = [
+dependencies = []
+
+[project.optional-dependencies]
+training = [
     "timm==1.0.21",
     "numpy",
     "pandas==2.3.3",
@@ -26,8 +29,21 @@ dependencies = [
     "onnxscript==0.5.4",
     "onnxruntime==1.23.2",
     "torch-lr-finder==0.2.2",
+    "python-multipart==0.0.20",
+]
+inference = [
+    "numpy",
+    "Pillow==12.0.0",
+    "scikit-learn==1.7.2",
+    "tqdm==4.67.1",
+    "onnx==1.19.1",
+    "onnxscript==0.5.4",
+    "onnxruntime==1.23.2",
     "fastapi==0.120.1",
     "uvicorn[standard]==0.38.0",
     "python-multipart==0.0.20",
     "pydantic",
+    "opencv-python==4.12.0.88",
+    "pydantic-settings==2.11.0",
+    "requests==2.32.5",
 ]

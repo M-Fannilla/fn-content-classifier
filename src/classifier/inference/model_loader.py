@@ -5,16 +5,14 @@ import logging
 import numpy as np
 import onnxruntime as ort
 
-from ..configs import OnnxModelConfig
-from .. import ONNX_DIR
+from .configs import OnnxModelConfig
+from . import ONNX_DIR
 
 logger = logging.getLogger(__name__)
-
 
 class ModelsEnum(enum.Enum):
     ACTION = "action"
     BODYPARTS = "bodyparts"
-
 
 
 class ModelManager:

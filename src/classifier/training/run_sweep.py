@@ -6,9 +6,9 @@ import argparse
 
 # Import training modules
 from .configs import TrainConfig
-from .training.utils import compute_class_frequency, set_seed
-from .training.dataset import create_data_loaders, load_and_prepare_data
-from .training.trainer import Trainer
+from .utils import compute_class_frequency, set_seed
+from .dataset import create_data_loaders, load_and_prepare_data
+from .trainer import Trainer
 
 WANDB_ENTITY: str | None = None
 WANDB_PROJECT: str | None = None

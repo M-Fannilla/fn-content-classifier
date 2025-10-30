@@ -4,9 +4,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="pkg versioning">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="4a58c6fa-3294-4387-8780-7a16b72e1847" name="Changes" comment="working on inference">
+      <change afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/onnx/action.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/onnx/action.onnx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/classifier/inference/file_loaders.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/classifier/inference/video_processing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/classifier/training/configs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sweep_positions.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.cursorignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference.Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/inference.Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/pull_git.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/pull_git.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/configs.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/app.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/image_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/image_processing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/inference_config.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/model_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/model_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/responses.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/run_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/run_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/train_best_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/train_best_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/find_batch_size.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/find_batch_size.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/find_lr.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/find_lr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/model_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/model_helpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/trainer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +65,8 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.convert_to_onnx.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.main_inference.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "SHELLCHECK.PATH": "/Users/milosz/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
@@ -58,19 +90,20 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/classifier/inference" />
       <recent name="$PROJECT_DIR$/training" />
       <recent name="$PROJECT_DIR$/inference" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/classifier/training" />
+      <recent name="$PROJECT_DIR$/models/onnx" />
       <recent name="$PROJECT_DIR$/src/classifier" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/training/models" />
-      <recent name="$PROJECT_DIR$/scripts" />
-      <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="convert_to_onnx" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="main_inference" type="PythonConfigurationType" factoryName="Python">
       <module name="fn-classifier-final" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -79,25 +112,35 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="SDK_NAME" value="Python 3.11 virtualenv at ~/Projects/fn-classifier-final/venv" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/convert_to_onnx.py" />
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </EXTENSION>
+      <option name="SCRIPT_NAME" value="classifier.inference.main" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
+      <option name="MODULE_MODE" value="true" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.convert_to_onnx" />
-      </list>
-    </recent_temporary>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -115,7 +158,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
-      <workItem from="1761586256358" duration="62533000" />
+      <workItem from="1761586256358" duration="102537000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />
@@ -253,7 +296,47 @@
       <option name="project" value="LOCAL" />
       <updated>1761733996735</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="pkg versioning">
+      <option name="closed" value="true" />
+      <created>1761734389222</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1761734389222</updated>
+    </task>
+    <task id="LOCAL-00019" summary="working on inference">
+      <option name="closed" value="true" />
+      <created>1761738101199</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1761738101199</updated>
+    </task>
+    <task id="LOCAL-00020" summary="working on inference">
+      <option name="closed" value="true" />
+      <created>1761740302417</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1761740302417</updated>
+    </task>
+    <task id="LOCAL-00021" summary="working on inference">
+      <option name="closed" value="true" />
+      <created>1761748815961</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1761748815961</updated>
+    </task>
+    <task id="LOCAL-00022" summary="working on inference">
+      <option name="closed" value="true" />
+      <created>1761817579749</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1761817579749</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -263,9 +346,12 @@
     <MESSAGE value="remove build" />
     <MESSAGE value="wip" />
     <MESSAGE value="pkg versioning" />
-    <option name="LAST_COMMIT_MESSAGE" value="pkg versioning" />
+    <MESSAGE value="working on inference" />
+    <option name="LAST_COMMIT_MESSAGE" value="working on inference" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/fn_classifier_final$main.coverage" NAME="main Coverage Results" MODIFIED="1761899554089" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/classifier/inference" />
     <SUITE FILE_PATH="coverage/fn_classifier_final$convert_to_onnx.coverage" NAME="convert_to_onnx Coverage Results" MODIFIED="1761664917900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fn_classifier_final$main_inference.coverage" NAME="main_inference Coverage Results" MODIFIED="1761901875557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

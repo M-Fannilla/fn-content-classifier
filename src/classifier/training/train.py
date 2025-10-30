@@ -3,9 +3,9 @@ import time
 
 # Import our custom modules
 from .configs import TrainConfig
-from .training.dataset import create_data_loaders, load_and_prepare_data
-from .training.trainer import Trainer
-from .training.utils import (
+from .dataset import create_data_loaders, load_and_prepare_data
+from .trainer import Trainer
+from .utils import (
     compute_class_frequency,
     print_system_info,
     set_seed,

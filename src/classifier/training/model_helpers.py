@@ -1,9 +1,9 @@
 import numpy as np
 import torch.nn as nn
 import timm
-from ..configs import TrainConfig
-from .. import DEVICE
-from ..model import ClassifierModel
+from .configs import TrainConfig
+from . import DEVICE
+from .model import ClassifierModel
 
 
 def create_model(config: TrainConfig, num_classes: int) -> nn.Module:

@@ -1,7 +1,7 @@
 import torch
 from timm import create_model
-from ..configs import TrainConfig
-from .. import DEVICE
+from .configs import TrainConfig
+from . import DEVICE
 
 
 def _get_gpu_memory():

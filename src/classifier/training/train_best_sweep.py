@@ -10,6 +10,7 @@ from .train import train_main
 
 def load_sweep_config(model_type: str) -> dict:
     with open(f"sweep_{model_type}.yaml", "r") as f:
+        print(f"Fetching the {model_type} sweep config ...")
         return yaml.safe_load(f)
 
 
@@ -22,6 +23,7 @@ def get_sweep(sweep_config: dict) -> tuple[Sweep, str]:
     sweep = api.sweep(
         f"{wandb_entity}/{wandb_project}/{sweep_id}"
     )
+    print(f"Fetching the best {sweep_id} parameters...")
 
     return sweep, best_metric_name
 
@@ -34,7 +36,7 @@ def extract_train_config(sweep: Sweep, best_metric_name: str) -> TrainConfig:
         best_dict: dict = json.loads(best_dict)
         best_dict.pop('_wandb')
 
-    config_params = set(TrainConfig().valid_params())
+    config_params = set(TrainConfig.valid_params())
     same_keys = set(best_dict.keys()).intersection(config_params)
 
     best_dict = {k: v for k, v in best_dict.items() if k in same_keys}
@@ -52,10 +54,10 @@ if __name__ == "__main__":
 
     parsed_args = args.parse_args()
     model_to_sweep = parsed_args.model_type
-
     config = load_sweep_config(model_type=model_to_sweep)
     sweep_obj, metric_name = get_sweep(config)
     best_train_config = extract_train_config(sweep_obj, metric_name)
+    best_train_config.model_type = model_to_sweep
     best_train_config.info()
     train_main(best_train_config)
 

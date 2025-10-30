@@ -9,8 +9,8 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 import matplotlib.pyplot as plt
 
 # Import custom modules
-from .. import DATASETS_DIR
-from ..configs import TrainConfig
+from . import DATASETS_DIR
+from .configs import TrainConfig
 
 
 class MultilabelImageDataset(Dataset):
