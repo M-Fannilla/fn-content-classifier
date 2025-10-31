@@ -9,14 +9,16 @@
       <change afterPath="$PROJECT_DIR$/models/onnx/action.onnx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/models/onnx/bodyparts.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/models/onnx/bodyparts.onnx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run_job.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/classifier/inference/job_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference.Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/inference.Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/classifier/training/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/training/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_job.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_job.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/file_loaders.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/file_loaders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/job_main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/inference/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/classifier/inference/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/find_lr.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/find_lr.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classifier/training/model_train.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/model_train.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,11 +81,11 @@
       <recent name="$PROJECT_DIR$/inference" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/notebooks" />
       <recent name="$PROJECT_DIR$/src/classifier/training" />
       <recent name="$PROJECT_DIR$/models/onnx" />
       <recent name="$PROJECT_DIR$/src/classifier" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/training/models" />
     </key>
   </component>
   <component name="RunManager" selected="Python.run_job">
@@ -202,7 +204,7 @@
       <updated>1761575106465</updated>
       <workItem from="1761575107605" duration="6228000" />
       <workItem from="1761586256358" duration="114390000" />
-      <workItem from="1761920601716" duration="901000" />
+      <workItem from="1761920601716" duration="3383000" />
     </task>
     <task id="LOCAL-00001" summary="remove build">
       <option name="closed" value="true" />
@@ -388,7 +390,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761904305990</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="add configuration and processing for ONNX and Torch models; implement video processing utilities">
+      <option name="closed" value="true" />
+      <created>1761921546308</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1761921546308</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

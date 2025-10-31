@@ -19,7 +19,3 @@ push-to-gcr: build-inference tag-inference
 
 inference-run:
 	docker run $(TAG)
-
-
-# 495mb old
-#

@@ -15,7 +15,6 @@ if __name__ == "__main__":
         "https://s86.erome.com/1637/cZQdg5uU/FkzU6ldv.jpeg",
     ])
 
-    # ✅ No "task_overrides" key — pass container_overrides directly
     request = run_v2.RunJobRequest(
         name=name,
         overrides={
