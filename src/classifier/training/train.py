@@ -13,7 +13,6 @@ from .utils import (
 
 def train_main(config: TrainConfig) -> None:
     """Main training function."""
-
     # Print system information
     print_system_info()
 

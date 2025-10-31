@@ -1,8 +1,25 @@
-INFERENCE_IMAGE_NAME?=classifier
-
+ENVIRONMENT ?= dev
+PROJECT ?= fannilla-$(ENVIRONMENT)
+TAG ?= fn-content-classifier:latest
+ARTIFACT_IMAGE ?= europe-docker.pkg.dev/$(PROJECT)/shared-repository/$(TAG)
 
 build-inference:
-	docker build . -t $(INFERENCE_IMAGE_NAME) -f inference.Dockerfile
+	docker build \
+	  --platform=linux/amd64 \
+	  -t ${TAG} \
+	  -f inference.Dockerfile \
+	  --progress=plain \
+	  .
+
+tag-inference:
+	docker tag $(TAG) $(ARTIFACT_IMAGE)
+
+push-to-gcr: build-inference tag-inference
+	docker push $(ARTIFACT_IMAGE)
 
 inference-run:
-	docker run $(INFERENCE_IMAGE_NAME)
+	docker run $(TAG)
+
+
+# 495mb old
+#

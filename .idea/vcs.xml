@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../Fannilla/Jobs/Transcoder" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Fannilla/Modules" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Fannilla/Services/Content" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Fannilla/Services/Payments" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Fannilla/Services/Users" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Fannilla/actions" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
 </project>
