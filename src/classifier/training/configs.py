@@ -27,8 +27,8 @@ class TrainConfig:
     weight_decay: float = 1e-4
     learning_rate: float = 1.25E-05
     epochs: int = 10
-    bce_power: float = 0.5
-    tau_logit_adjust: float = 0.5
+    bce_power: float = 0.6
+    tau_logit_adjust: float = 1
 
     # Weights & Biases settings
     use_wandb: bool = True
