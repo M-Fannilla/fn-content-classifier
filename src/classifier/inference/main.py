@@ -19,6 +19,7 @@ logger = logging.getLogger("fn-content-classifier.job_main")
 try:
     start_init = time.time()
     image_loader = GCPImageLoader()
+
     inference_config = InferenceConfig()
     model_manager = ModelManager(
         ModelsEnum.ACTION,
@@ -77,7 +78,7 @@ if __name__ == "__main__":
         if not isinstance(urls, list):
             raise TypeError("URLs argument must be a JSON list of strings")
 
-
+        image_loader.download_images(urls)
 
         logger.info(f"Received {len(urls)} URLs for inference")
         results = image_inference(image_to_predict=urls)
