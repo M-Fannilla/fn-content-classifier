@@ -67,7 +67,7 @@ def load_and_prepare_data(
 ) -> tuple[pd.DataFrame, list[str], np.ndarray]:
     """Load and prepare the dataset with stratified splitting."""
     # Load labels
-    df = pd.read_csv(config.label_dataframe, index_col=0)
+    df = pd.read_parquet(config.label_dataframe)
 
     # Get label columns (all except file_name)
     label_columns = [col for col in df.columns if col != 'file_name']
@@ -75,6 +75,32 @@ def load_and_prepare_data(
 
     # Create image paths
     image_paths = [str(DATASETS_DIR / filename) for filename in df['file_name']]
+
+    # Reduce dataset size if dataset_size is a float < 1.0
+    if config.dataset_size < 1.0:
+        # Calculate number of splits needed to approximate the desired dataset size
+        # Using 1/dataset_size gives us the number of folds where each fold is ~dataset_size
+        n_splits = max(2, int(1 / config.dataset_size))
+        
+        print(f"Reducing dataset to {config.dataset_size*100:.1f}% using stratified sampling...")
+        print(f"  Original size: {len(image_paths)} samples")
+        
+        # Use MultilabelStratifiedKFold for stratified sampling
+        mlsf = MultilabelStratifiedKFold(
+            n_splits=n_splits,
+            shuffle=True,
+            random_state=config.seed
+        )
+        
+        # Get the first fold - this gives us approximately dataset_size fraction of the data
+        subset_idx, _ = next(mlsf.split(image_paths, labels))
+        
+        # Update data to only include the subset
+        df = df.iloc[subset_idx].reset_index(drop=True)
+        image_paths = [image_paths[i] for i in subset_idx]
+        labels = labels[subset_idx]
+        
+        print(f"  Reduced size: {len(image_paths)} samples ({len(image_paths)/len(subset_idx)*n_splits*100:.1f}% of original)")
 
     return df, image_paths, labels
 

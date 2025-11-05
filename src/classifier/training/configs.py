@@ -12,6 +12,7 @@ from ..inference.configs import OnnxModelConfig
 class TrainConfig:
     # Dataset settings
     model_type: str = 'action'
+    dataset_size: float = 0.2
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
 
@@ -25,7 +26,7 @@ class TrainConfig:
     # Finetuning settings
     weight_decay: float = 1e-4
     learning_rate: float = 1.25E-05
-    epochs: int = 15
+    epochs: int = 10
     bce_power: float = 0.5
     tau_logit_adjust: float = 0.5
 
@@ -49,7 +50,7 @@ class TrainConfig:
 
     @property
     def label_dataframe(self):
-        return f"{DATASETS_DIR}/{self.model_type}_labels.csv"
+        return f"{DATASETS_DIR}/balanced_{self.model_type}.parquet"
 
     @property
     def model_catalog(self) -> dict[str, int]:
