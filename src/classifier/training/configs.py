@@ -134,6 +134,8 @@ class TorchModelConfig:
         else:
             onnx_path = ONNX_DIR / self.model_type / file_name
 
+        onnx_path.parent.mkdir(parents=True, exist_ok=True)
+
         print("Exporting ONNX with dynamic batch size...")
 
         torch.onnx.export(
