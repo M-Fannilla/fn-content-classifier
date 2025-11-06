@@ -12,7 +12,7 @@ from ..inference.configs import OnnxModelConfig
 class TrainConfig:
     # Dataset settings
     model_type: str = 'actions'
-    dataset_size: float = 0.2
+    dataset_size: float = 1.0
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
 
@@ -130,9 +130,9 @@ class TorchModelConfig:
 
         file_name = "model.onnx"
         if epoch:
-            onnx_path = ONNX_DIR / {self.model_type} / f"{str(epoch)}_{file_name}"
+            onnx_path = ONNX_DIR / self.model_type / f"{str(epoch)}_{file_name}"
         else:
-            onnx_path = ONNX_DIR / {self.model_type} / file_name
+            onnx_path = ONNX_DIR / self.model_type / file_name
 
         print("Exporting ONNX with dynamic batch size...")
 
