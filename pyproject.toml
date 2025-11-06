@@ -9,6 +9,7 @@ version = "0.0.1"
 description = "A package to train and inference image classification models."
 dependencies = [
     "numpy",
+    "pydantic",
     "Pillow==12.0.0",
     "tqdm==4.67.1",
     "onnx==1.19.1",
@@ -36,7 +37,6 @@ training = [
     "python-multipart==0.0.20",
 ]
 inference = [
-    "pydantic",
     "opencv-python==4.12.0.88",
     "requests==2.32.5",
 ]
