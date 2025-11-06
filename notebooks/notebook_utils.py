@@ -2,7 +2,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_label_dist(label_dataframe: pd.DataFrame, name: str = ''):
+def plot_label_dist(df: pd.DataFrame, name: str = ''):
+    label_dataframe = df.copy()
+    if 'file_name' in label_dataframe.columns:
+        label_dataframe = label_dataframe.drop(columns=['file_name'])
+
     label_counts = label_dataframe.sum(axis=0).sort_values(ascending=False)
     total = label_counts.sum()
 
