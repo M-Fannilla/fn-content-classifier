@@ -243,7 +243,7 @@ def validate_image_paths(image_paths: list[str]) -> list[str]:
         except Exception:
             return path
 
-    with ThreadPoolExecutor(max_workers=16) as executor:
+    with ThreadPoolExecutor(max_workers=os.cpu_count() // 2) as executor:
         futures = [
             executor.submit(_validate_image, path) for path in image_paths
         ]
