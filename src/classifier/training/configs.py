@@ -48,6 +48,8 @@ class TrainConfig:
     stratified_data: bool = True
     limit_size: int  = 1000
 
+    validate_images: bool = True
+
     @property
     def label_dataframe(self):
         return f"{DATASETS_DIR}/balanced_{self.model_type}.parquet"

@@ -1,3 +1,6 @@
+import os
+from concurrent.futures import ThreadPoolExecutor
+
 import pandas as pd
 import numpy as np
 from PIL import Image
@@ -7,6 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 # Import custom modules
 from . import DATASETS_DIR
@@ -67,7 +71,17 @@ def load_and_prepare_data(
 ) -> tuple[pd.DataFrame, list[str], np.ndarray]:
     """Load and prepare the dataset with stratified splitting."""
     # Load labels
-    df = pd.read_parquet(config.label_dataframe)
+    clean_parq = DATASETS_DIR / f'clean_{config.model_type}.parquet'
+
+    if not clean_parq.exists():
+        df = pd.read_parquet(config.label_dataframe)
+        to_remove = validate_image_paths(df['file_name'].tolist())
+        print(f"Removing {len(to_remove)} invalid image files from dataset.")
+        df = df[~df['file_name'].isin(to_remove)].reset_index(drop=True)
+        df.to_parquet(clean_parq)
+
+    else:
+        df = pd.read_parquet(clean_parq)
 
     # Get label columns (all except file_name)
     label_columns = [col for col in df.columns if col != 'file_name']
@@ -219,6 +233,28 @@ def create_data_loaders(
         test_labels
     )
 
+def validate_image_paths(image_paths: list[str]) -> list[str]:
+    """Validate image paths and return only those that can be opened."""
+
+    def _validate_image(path: str) -> str:
+        try:
+            Image.open(DATASETS_DIR / path).verify()
+            return ''
+        except Exception:
+            return path
+
+    with ThreadPoolExecutor(max_workers=16) as executor:
+        futures = [
+            executor.submit(_validate_image, path) for path in image_paths
+        ]
+
+        to_remove = []
+        for future in tqdm(futures, total=len(futures), desc='Validating images'):
+            result = future.result()
+            if result:
+                to_remove.append(future.result())
+
+    return to_remove
 
 def plot_label_distribution(
         original_labels: np.ndarray,
