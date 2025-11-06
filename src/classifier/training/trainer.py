@@ -241,8 +241,8 @@ class Trainer:
             torch.cuda.empty_cache()
 
         if save_model:
-            self.save_checkpoint(epoch='final')
-            self.save_onnx(epoch='final')
+            self.save_checkpoint()
+            self.save_onnx()
 
         # Finish wandb run
         if self.config.use_wandb:
@@ -286,14 +286,14 @@ class Trainer:
             threshold=self.best_threshold,
         )
 
-    def save_onnx(self, epoch: int | str) -> TorchModelConfig:
+    def save_onnx(self, epoch: int | str | None = None) -> TorchModelConfig:
         """Save the trained model."""
         model_path, model_config = self._torch_model_config(epoch=epoch)
-        model_config.export_to_onnx(model=self.model)
+        model_config.export_to_onnx(model=self.model, epoch=epoch)
         model_config.save_as_onnx_config(epoch=epoch)
         return model_config
 
-    def save_checkpoint(self, epoch: int | str) -> TorchModelConfig:
+    def save_checkpoint(self, epoch: int | str | None = None) -> TorchModelConfig:
         """Save the trained model."""
         model_path, model_config = self._torch_model_config(epoch)
         model_config.save_torch_model(save_path=str(model_path))

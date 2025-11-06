@@ -116,8 +116,8 @@ if __name__ == "__main__":
     args.add_argument(
         "--model_type",
         type=str,
-        default="action",
-        help="Type of model to sweep (e.g., 'action', 'bodyparts')",
+        default="actions",
+        help="Type of model to sweep (e.g., 'actions', 'bodyparts')",
     )
 
     parsed_args = args.parse_args()

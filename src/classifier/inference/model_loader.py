@@ -11,7 +11,7 @@ from . import ONNX_DIR
 logger = logging.getLogger(__name__)
 
 class ModelsEnum(enum.Enum):
-    ACTION = "action"
+    ACTION = "actions"
     BODYPARTS = "bodyparts"
 
 

@@ -11,7 +11,7 @@ from ..inference.configs import OnnxModelConfig
 @dataclass
 class TrainConfig:
     # Dataset settings
-    model_type: str = 'action'
+    model_type: str = 'actions'
     dataset_size: float = 0.2
     train_size_perc: float = 0.8
     test_size_perc: float = 0.2
@@ -111,7 +111,7 @@ class TorchModelConfig:
             }
         )
 
-    def save_as_onnx_config(self, epoch: int | str) -> None:
+    def save_as_onnx_config(self, epoch: int | str | None) -> None:
         save_path = OnnxModelConfig(
             model_type=self.model_type,
             labels=self.labels,
@@ -120,12 +120,17 @@ class TorchModelConfig:
         ).save_config(epoch=epoch)
         print(f"[✓] Saved config for model: {save_path}")
 
-    def export_to_onnx(self, model: nn.Module) -> None:
+    def export_to_onnx(self, model: nn.Module, epoch: int | str | None = None) -> None:
         model.eval().to(DEVICE)
 
         image_shape = (1, 3, self.image_size, self.image_size)
         example_input = torch.randn(*image_shape, device=DEVICE)
-        onnx_path = ONNX_DIR / f"{self.model_type}.onnx"
+
+        file_name = "model.onnx"
+        if epoch:
+            onnx_path = ONNX_DIR / {self.model_type} / f"{str(epoch)}_{file_name}"
+        else:
+            onnx_path = ONNX_DIR / {self.model_type} / file_name
 
         print("Exporting ONNX with dynamic batch size...")
 
