@@ -4,9 +4,9 @@ import sys
 import json
 import logging
 import time
-from .file_loaders import GCPImageLoader
+from .download import GCPMediaDownloader
 from .configs import InferenceConfig
-from .image_processing import ImageProcessor
+from classifier.inference.image_processing import ImageProcessor
 from .inference import Inference, merge_results
 from .model_loader import ModelManager
 
@@ -18,7 +18,7 @@ logger = logging.getLogger("fn-content-classifier.job_main")
 
 try:
     start_init = time.time()
-    image_loader = GCPImageLoader()
+    media_loader = GCPMediaDownloader()
 
     inference_config = InferenceConfig()
     model_manager = ModelManager()
@@ -32,8 +32,8 @@ try:
 
     image_processor = ImageProcessor(
         target_size=model_manager.get_image_size(),
-        batch_workers=inference_config.IMAGE_PROCESSING_WORKERS,
     )
+
     logger.info(f"Initialization complete in {time.time() - start_init:.2f}s")
 
 except Exception as e:
@@ -66,23 +66,19 @@ def image_inference(image_to_predict: list[Path] = None):
 
 if __name__ == "__main__":
     logger.info(f"CLI args: {sys.argv}")
-
     try:
-        # if len(sys.argv) < 2:
-        #     raise ValueError("No URLs argument provided to job.")
-        #
-        # urls_json = sys.argv[1]
-        # urls = json.loads(urls_json)
-        #
-        # if not isinstance(urls, list):
-        #     raise TypeError("URLs argument must be a JSON list of strings")
-        urls = [
-            'fn-ai-datasets/content-classification/v0/images/1000.jpg',
-            'fn-ai-datasets/content-classification/v0/images/2001.jpg',
-        ]
+        if len(sys.argv) < 2:
+            raise ValueError("No URLs argument provided to job.")
+
+        urls_json = sys.argv[1]
+        urls = json.loads(urls_json)
+
+        if not isinstance(urls, list):
+            raise TypeError("URLs argument must be a JSON list of strings")
+
         logger.info(f"Received {len(urls)} URLs for inference")
 
-        temp_files = image_loader.download_images(*urls)
+        temp_files = media_loader.download_images(*urls)
         logger.info(f"Downloaded {len(temp_files)} images for inference")
 
         results = image_inference(image_to_predict=temp_files)

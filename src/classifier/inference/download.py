@@ -1,12 +1,9 @@
-from functools import cached_property
-
 import os
-from google.cloud.storage.transfer_manager import THREAD
-
 from pathlib import Path
 from google.cloud.storage import Bucket, transfer_manager, Client
+from functools import cached_property
 
-class GCPImageLoader:
+class GCPMediaDownloader:
     def __init__(self, download_dir: Path = Path('./temp')):
         self.download_dir = download_dir
         self.download_dir.mkdir(parents=True, exist_ok=True)
@@ -20,7 +17,7 @@ class GCPImageLoader:
             blob_names=[f.removeprefix(bucket_name + "/") for f in file_paths],
             destination_directory=str(self.download_dir / bucket_name),
             max_workers=os.cpu_count() // 2,
-            worker_type=THREAD,
+            worker_type=transfer_manager.THREAD,
             skip_if_exists=True,
         )
 

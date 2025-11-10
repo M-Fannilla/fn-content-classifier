@@ -14,11 +14,11 @@ class OnnxModelConfig:
     threshold: np.ndarray | list[float]
 
     def save_config(self, epoch: int | str | None = None) -> Path:
-        file_name = "model.json"
+        file_name = f"{self.model_type}.json"
         if epoch:
-            save_path = ONNX_DIR / self.model_type / f"{str(epoch)}_{file_name}"
+            save_path = ONNX_DIR / f"{str(epoch)}_{file_name}"
         else:
-            save_path = ONNX_DIR / self.model_type / file_name
+            save_path = ONNX_DIR / file_name
 
         if isinstance(self.threshold, np.ndarray):
             self.threshold = self.threshold.tolist()

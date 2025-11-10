@@ -91,7 +91,8 @@ class ModelManager:
 
     def get_labels(self, model: str) -> list[str]:
         """Get labels for a model."""
-        return self.model_configs[model].labels
+        raw_labels = self.model_configs[model].labels
+        return [l.replace(" ", "_") for l in raw_labels]
 
     def get_onnx_session(self, model: str) -> ort.InferenceSession:
         return self.models.get(model)
