@@ -1,5 +1,4 @@
 """Model loading and management."""
-import enum
 import logging
 
 import numpy as np
@@ -7,34 +6,48 @@ import onnxruntime as ort
 
 from .configs import OnnxModelConfig
 from . import ONNX_DIR
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-class ModelsEnum(enum.Enum):
-    ACTION = "actions"
-    BODYPARTS = "bodyparts"
-
+def find_files(directory: Path, extension: str) -> list[str]:
+    """Find all files with a given extension in a directory."""
+    return [p.name.removesuffix(extension) for p in directory.iterdir() if p.suffix == extension]
 
 class ModelManager:
     """Manages ONNX models and their labels."""
-    models: dict[ModelsEnum, ort.InferenceSession] = {}
-    model_configs: dict[ModelsEnum, OnnxModelConfig] | None = None
+    models: dict[str, ort.InferenceSession] = {}
+    model_configs: dict[str, OnnxModelConfig] | None = None
 
-    def __init__(self, *models_to_load: ModelsEnum):
-        self.models_to_load = models_to_load
+    @staticmethod
+    def _models_to_load() -> list[str]:
+        return find_files(ONNX_DIR, '.onnx')
+
+    @staticmethod
+    def _configs_to_load() -> list[str]:
+        return find_files(ONNX_DIR, '.json')
 
     def load_configs(self):
+        configs = self._configs_to_load()
+
+        if not configs:
+            raise ValueError(f"No model configs found in {ONNX_DIR}")
+
         self.model_configs = {
-            model_type:  OnnxModelConfig.load_config(model_type.value) for model_type in self.models_to_load
+            model_type:  OnnxModelConfig.load_config(f"{model_type}.json") for model_type in configs
         }
+
+        print(f"Found {len(self.model_configs)} model configs to load: {configs}")
+
 
     def load_all(self):
         """Load all models and their labels."""
         self.load_configs()
-        for model_name in self.models_to_load:
+
+        for model_name in self._models_to_load():
             self.load_model(model_name)
 
-    def load_model(self, model: ModelsEnum) -> None:
+    def load_model(self, model: str) -> None:
         """Load an ONNX model into an inference session."""
         if model in self.models:
             return
@@ -46,13 +59,13 @@ class ModelManager:
             providers.insert(0, 'CUDAExecutionProvider')
 
         try:
-            self.models[model] = ort.InferenceSession(ONNX_DIR / f"{model_type}.onnx", providers=providers)
+            self.models[model] = ort.InferenceSession(ONNX_DIR / f'{model_type}.onnx', providers=providers)
             logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
 
         except Exception:
             logger.error(f"Model '{model_type}' from {ONNX_DIR} could not be loaded")
 
-    def get_all_models(self) -> list[ModelsEnum]:
+    def get_all_models(self) -> list[str]:
         """Get list of available model names."""
         return list(self.model_configs.keys())
 
@@ -67,7 +80,7 @@ class ModelManager:
                     raise ValueError("Inconsistent image sizes across models.")
         return image_size
 
-    def get_threshold(self, model: ModelsEnum) -> np.ndarray:
+    def get_threshold(self, model: str) -> np.ndarray:
         """Get labels for a model."""
         threshold = self.model_configs[model].threshold
 
@@ -76,9 +89,9 @@ class ModelManager:
 
         return threshold
 
-    def get_labels(self, model: ModelsEnum) -> list[str]:
+    def get_labels(self, model: str) -> list[str]:
         """Get labels for a model."""
         return self.model_configs[model].labels
 
-    def get_onnx_session(self, model: ModelsEnum) -> ort.InferenceSession:
+    def get_onnx_session(self, model: str) -> ort.InferenceSession:
         return self.models.get(model)

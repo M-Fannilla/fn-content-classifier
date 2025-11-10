@@ -1,14 +1,14 @@
+from pathlib import Path
+
 import sys
 import json
 import logging
 import time
-from typing import List, Optional
-
-from classifier.inference.file_loaders import GCPImageLoader
+from .file_loaders import GCPImageLoader
 from .configs import InferenceConfig
 from .image_processing import ImageProcessor
-from .inference import Inference
-from .model_loader import ModelManager, ModelsEnum
+from .inference import Inference, merge_results
+from .model_loader import ModelManager
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,15 +21,13 @@ try:
     image_loader = GCPImageLoader()
 
     inference_config = InferenceConfig()
-    model_manager = ModelManager(
-        ModelsEnum.ACTION,
-        ModelsEnum.BODYPARTS
-    )
+    model_manager = ModelManager()
     model_manager.load_all()
 
     inference = Inference(
         model_manager=model_manager,
         apply_threshold=True,
+        threshold_offset=0.2,
     )
 
     image_processor = ImageProcessor(
@@ -43,12 +41,13 @@ except Exception as e:
     raise
 
 
-def image_inference(image_to_predict: Optional[List[str]] = None):
+def image_inference(image_to_predict: list[Path] = None):
     logger.info(f"Processing batch of {len(image_to_predict)} images")
 
     try:
         start_proc = time.time()
         np_images_batch = image_processor.process_batch(image_to_predict)
+
         logger.info(f"Image processing done in {time.time() - start_proc:.2f}s")
 
         start_infer = time.time()
@@ -57,6 +56,7 @@ def image_inference(image_to_predict: Optional[List[str]] = None):
             image_array=np_images_batch,
         )
         logger.info(f"Inference done in {time.time() - start_infer:.2f}s")
+
         return results
 
     except Exception:
@@ -65,27 +65,32 @@ def image_inference(image_to_predict: Optional[List[str]] = None):
 
 
 if __name__ == "__main__":
-    logger.info("🚀 Starting fn-content-classifier job")
     logger.info(f"CLI args: {sys.argv}")
 
     try:
-        if len(sys.argv) < 2:
-            raise ValueError("No URLs argument provided to job.")
-
-        urls_json = sys.argv[1]
-        urls = json.loads(urls_json)
-
-        if not isinstance(urls, list):
-            raise TypeError("URLs argument must be a JSON list of strings")
-
-        image_loader.download_images(urls)
-
+        # if len(sys.argv) < 2:
+        #     raise ValueError("No URLs argument provided to job.")
+        #
+        # urls_json = sys.argv[1]
+        # urls = json.loads(urls_json)
+        #
+        # if not isinstance(urls, list):
+        #     raise TypeError("URLs argument must be a JSON list of strings")
+        urls = [
+            'fn-ai-datasets/content-classification/v0/images/1000.jpg',
+            'fn-ai-datasets/content-classification/v0/images/2001.jpg',
+        ]
         logger.info(f"Received {len(urls)} URLs for inference")
-        results = image_inference(image_to_predict=urls)
+
+        temp_files = image_loader.download_images(*urls)
+        logger.info(f"Downloaded {len(temp_files)} images for inference")
+
+        results = image_inference(image_to_predict=temp_files)
+        results = merge_results(results)
         logger.info(f"Results:\n{json.dumps(results, indent=2)}")
 
     except json.JSONDecodeError:
-        logger.exception("❌ Failed to parse URLs JSON from command line")
+        logger.exception("Failed to parse URLs JSON from command line")
 
     except Exception:
-        logger.exception("❌ Unexpected error during job execution")
+        logger.exception("Unexpected error during job execution")

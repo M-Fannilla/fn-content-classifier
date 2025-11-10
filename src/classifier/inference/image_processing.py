@@ -1,83 +1,60 @@
+from pathlib import Path
+
 from functools import cached_property
 import numpy as np
 from PIL import Image
-from typing import Union
-import io
 from concurrent.futures import ThreadPoolExecutor
-import requests
 
 class ImageProcessor:
     def __init__(self, target_size: int, batch_workers: int):
         self.target_size = target_size
         self.batch_workers = batch_workers
 
-    def _download_image_from_url(self, url: str) -> str:
-        image_name = url.split('/')[-1]
-        save_path = f'./{image_name}'
-
-        response = requests.get(url, stream=True)
-        response.raise_for_status()  # raises if status != 200
-
-        with open(save_path, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-        print(f"[✓] Image saved to {save_path}")
-        return save_path
-
     def process(
             self,
-            image: str | bytes | Image.Image,
+            image_path: Path,
     ) -> np.ndarray:
-        if isinstance(image, bytes):
-            image = Image.open(io.BytesIO(image))
+        with Image.open(image_path) as image:
+            # Ensure RGB
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
 
-        elif isinstance(image, str):
-            if image.startswith('http'):
-                image = self._download_image_from_url(image)
+            # Resize image proportionally and add black padding
+            original_width, original_height = image.size
 
-            image = Image.open(image)
+            # Calculate scale factor to fit within target_size while maintaining aspect ratio
+            scale = min(self.target_size / original_width, self.target_size / original_height)
+            new_width = int(original_width * scale)
+            new_height = int(original_height * scale)
 
-        # Ensure RGB
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
+            # Resize image proportionally
+            image = image.resize((new_width, new_height), Image.BILINEAR)
 
-        # Resize image proportionally and add black padding
-        original_width, original_height = image.size
+            # Create black canvas
+            canvas = self._canvas
 
-        # Calculate scale factor to fit within target_size while maintaining aspect ratio
-        scale = min(self.target_size / original_width, self.target_size / original_height)
-        new_width = int(original_width * scale)
-        new_height = int(original_height * scale)
+            # Calculate position to paste (center the image)
+            paste_x = (self.target_size - new_width) // 2
+            paste_y = (self.target_size - new_height) // 2
 
-        # Resize image proportionally
-        image = image.resize((new_width, new_height), Image.BILINEAR)
+            # Paste resized image onto black canvas
+            canvas.paste(image, (paste_x, paste_y))
 
-        # Create black canvas
-        canvas = self._canvas
+            # Convert to numpy array and normalize to [0, 1]
+            image_array = np.array(canvas).astype(np.float32) / 255.0
 
-        # Calculate position to paste (center the image)
-        paste_x = (self.target_size - new_width) // 2
-        paste_y = (self.target_size - new_height) // 2
+            # Apply ImageNet normalization
+            mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+            std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+            image_array = (image_array - mean) / std
 
-        # Paste resized image onto black canvas
-        canvas.paste(image, (paste_x, paste_y))
+            # Convert HWC to CHW format
+            image_array = np.transpose(image_array, (2, 0, 1))
 
-        # Convert to numpy array and normalize to [0, 1]
-        image_array = np.array(canvas).astype(np.float32) / 255.0
+            # Add batch dimension
+            image_array = np.expand_dims(image_array, axis=0)
 
-        # Apply ImageNet normalization
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        image_array = (image_array - mean) / std
-
-        # Convert HWC to CHW format
-        image_array = np.transpose(image_array, (2, 0, 1))
-
-        # Add batch dimension
-        image_array = np.expand_dims(image_array, axis=0)
-
-        return image_array
+            return image_array
 
     @cached_property
     def _canvas(self) -> Image.Image:
@@ -89,17 +66,11 @@ class ImageProcessor:
 
     def process_batch(
             self,
-            images: list[Union[Image.Image, bytes, str]],
+            images: list[Path],
     ) -> np.ndarray:
-        with ThreadPoolExecutor(max_workers=self.batch_workers) as executor:
-            futures = [
-                executor.submit(self.process, image)
-                for image in images
-            ]
-
-            processed_images = [future.result() for future in futures]
-            processed_images = [img for img in processed_images if img is not None]
-
+        processed_images = []
+        for image in images:
+            processed_images.append(self.process(image))
+        processed_images = [img for img in processed_images if img is not None]
         print(f"[✓] Image batch preprocessing complete with {len(processed_images)}/{len(images)}.")
-
         return np.vstack(processed_images)

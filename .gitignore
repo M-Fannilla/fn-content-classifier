@@ -6,3 +6,5 @@ wandb/
 fn-content-dataset/
 src/classifier.egg-info/
 workspace.xml
+temp/
+datasets/

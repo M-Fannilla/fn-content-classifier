@@ -33,7 +33,7 @@ class OnnxModelConfig:
 
     @staticmethod
     def load_config(model_type: str) -> 'OnnxModelConfig':
-        load_path = ONNX_DIR / model_type / "model.json"
+        load_path = ONNX_DIR / model_type
 
         with open(load_path, 'r') as f:
             config_dict = json.load(f)
