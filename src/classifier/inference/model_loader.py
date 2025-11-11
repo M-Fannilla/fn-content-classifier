@@ -37,9 +37,6 @@ class ModelManager:
             model_type:  OnnxModelConfig.load_config(f"{model_type}.json") for model_type in configs
         }
 
-        print(f"Found {len(self.model_configs)} model configs to load: {configs}")
-
-
     def load_all(self):
         """Load all models and their labels."""
         self.load_configs()
@@ -60,7 +57,6 @@ class ModelManager:
 
         try:
             self.models[model] = ort.InferenceSession(ONNX_DIR / f'{model_type}.onnx', providers=providers)
-            logger.info(f"Model '{model_type}' from {ONNX_DIR} loaded successfully")
 
         except Exception:
             logger.error(f"Model '{model_type}' from {ONNX_DIR} could not be loaded")

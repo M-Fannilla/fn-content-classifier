@@ -1,13 +1,12 @@
-from pathlib import Path
-
 import sys
 import json
 import logging
-import time
+from pathlib import Path
+from .utils import split_files_by_type
 from .download import GCPMediaDownloader
 from .configs import InferenceConfig
-from classifier.inference.image_processing import ImageProcessor
-from .inference import Inference, merge_results
+from .processing import ImageProcessor, VideoProcessor
+from .inference import ImageClassifier, VideoClassifier
 from .model_loader import ModelManager
 
 logging.basicConfig(
@@ -16,77 +15,96 @@ logging.basicConfig(
 )
 logger = logging.getLogger("fn-content-classifier.job_main")
 
-try:
-    start_init = time.time()
-    media_loader = GCPMediaDownloader()
+def process_cli_args():
+    logger.debug(f"CLI args: {sys.argv}")
+    if len(sys.argv) < 2:
+        raise ValueError("No URLs argument provided to job.")
+    return json.loads(sys.argv[1])
 
-    inference_config = InferenceConfig()
+def classify_images(
+        classifier: ImageClassifier,
+        images_to_predict: list[Path],
+) -> dict[str, list[str]]:
+    images_results = classifier.classify(file_paths=images_to_predict)
+    return images_results
+
+def classify_videos(
+        classifier: VideoClassifier,
+        videos_to_predict: list[Path]
+) -> dict[str, list[str]]:
+    all_results = {}
+    for video_path in videos_to_predict:
+        video_results = classifier.classify(file_path=video_path)
+        all_results.update(video_results)
+
+    return all_results
+
+def clean_temp_folder_from_files(
+        temp_dir: Path,
+        result: dict[str, list[str]]
+) -> dict[str, list[str]]:
+    out = {}
+    for file_name, labels in result.items():
+        file_name_clean = file_name.removeprefix(str(temp_dir.resolve()) + '/')
+        out[file_name_clean] = labels
+
+    return out
+
+def main():
+    config = InferenceConfig()
+    downloader = GCPMediaDownloader()
     model_manager = ModelManager()
     model_manager.load_all()
 
-    inference = Inference(
+    # urls = process_cli_args()
+    urls = [
+        'fn-ai-datasets/content-classification/v0/images/1000.jpg',
+        'fn-raw-user-content-eu-dev/u/test_user/v/c/of_short.mp4',
+    ]
+
+    logger.info(f"Received {len(urls)} URLs for inference")
+
+    temp_files = downloader.download_images(*urls)
+
+    image_classifier = ImageClassifier(
+        inference_config=config,
+        processor=ImageProcessor(target_size=model_manager.get_image_size()),
+        model_manager=model_manager,
+        apply_threshold=True,
+        threshold_offset=0.2,
+    )
+    video_classifier = VideoClassifier(
+        inference_config=config,
+        processor=VideoProcessor(
+            target_size=model_manager.get_image_size(),
+            batch_workers=config.IMAGE_PROCESSING_WORKERS
+        ),
         model_manager=model_manager,
         apply_threshold=True,
         threshold_offset=0.2,
     )
 
-    image_processor = ImageProcessor(
-        target_size=model_manager.get_image_size(),
+    logger.info(f"Downloaded {len(temp_files)} files for classification")
+    images, videos, unsupported = split_files_by_type(files=temp_files)
+
+    image_classification_results = classify_images(
+        classifier=image_classifier,
+        images_to_predict=images,
     )
 
-    logger.info(f"Initialization complete in {time.time() - start_init:.2f}s")
+    video_classification_results = classify_videos(
+        classifier=video_classifier,
+        videos_to_predict=videos,
+    )
 
-except Exception as e:
-    logger.exception("❌ Failed during initialization")
-    raise
+    image_classification_results.update(video_classification_results)
 
+    clean_results = clean_temp_folder_from_files(
+        temp_dir=downloader.download_dir,
+        result=image_classification_results,
+    )
 
-def image_inference(image_to_predict: list[Path] = None):
-    logger.info(f"Processing batch of {len(image_to_predict)} images")
-
-    try:
-        start_proc = time.time()
-        np_images_batch = image_processor.process_batch(image_to_predict)
-
-        logger.info(f"Image processing done in {time.time() - start_proc:.2f}s")
-
-        start_infer = time.time()
-        results = inference.predict_all(
-            images_paths=image_to_predict,
-            image_array=np_images_batch,
-        )
-        logger.info(f"Inference done in {time.time() - start_infer:.2f}s")
-
-        return results
-
-    except Exception:
-        logger.exception("❌ Error during inference")
-        raise
-
+    logger.info(f"Final combined results:\n{json.dumps(clean_results, indent=2)}")
 
 if __name__ == "__main__":
-    logger.info(f"CLI args: {sys.argv}")
-    try:
-        if len(sys.argv) < 2:
-            raise ValueError("No URLs argument provided to job.")
-
-        urls_json = sys.argv[1]
-        urls = json.loads(urls_json)
-
-        if not isinstance(urls, list):
-            raise TypeError("URLs argument must be a JSON list of strings")
-
-        logger.info(f"Received {len(urls)} URLs for inference")
-
-        temp_files = media_loader.download_images(*urls)
-        logger.info(f"Downloaded {len(temp_files)} images for inference")
-
-        results = image_inference(image_to_predict=temp_files)
-        results = merge_results(results)
-        logger.info(f"Results:\n{json.dumps(results, indent=2)}")
-
-    except json.JSONDecodeError:
-        logger.exception("Failed to parse URLs JSON from command line")
-
-    except Exception:
-        logger.exception("Unexpected error during job execution")
+    main()

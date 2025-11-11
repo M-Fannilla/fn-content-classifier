@@ -3,15 +3,14 @@ import time
 import logging
 import numpy as np
 from .configs import InferenceConfig
-from .image_processing import ImageProcessor
+from .processing import ImageProcessor, VideoProcessor
 from .model_loader import ModelManager
 from .utils import flatten_labels, label_frequencies
-from .video_processing import VideoProcessor
 
 logger = logging.getLogger(__name__)
 
 
-class ImageInference:
+class ImageClassifier:
     def __init__(
             self,
             inference_config: InferenceConfig,
@@ -26,7 +25,7 @@ class ImageInference:
         self.apply_threshold = apply_threshold
         self.threshold_offset = threshold_offset if apply_threshold else 0.0
 
-    def inference(self, file_paths: list[Path]) -> dict[str, list[str]]:
+    def classify(self, file_paths: list[Path]) -> dict[str, list[str]]:
         start_proc = time.time()
         images_batch = []
         for img_path in file_paths:
@@ -36,23 +35,23 @@ class ImageInference:
         np_images_batch = np.vstack(images_batch)
         logger.info(f"Image processing done in {time.time() - start_proc:.2f}s")
 
-        results = self._model_inference(np_images_batch=np_images_batch)
+        results = self._run_models(np_images_batch=np_images_batch)
         results = {str(url): res for url, res in zip(file_paths, results)}
 
         return results
 
-    def _model_inference(self, np_images_batch: np.ndarray) -> list[list[str]]:
+    def _run_models(self, np_images_batch: np.ndarray) -> list[list[str]]:
         results = []
         start_infer = time.time()
         for model_name in self.model_manager.get_all_models():
             results.append(
-                self.predict(model=model_name, image_array=np_images_batch)
+                self.predict_batch(model=model_name, image_array=np_images_batch)
             )
 
         logger.info(f"Inference done in {time.time() - start_infer:.2f}s")
         return flatten_labels(results)
 
-    def predict(
+    def predict_batch(
             self,
             model: str,
             image_array: np.ndarray,
@@ -67,12 +66,11 @@ class ImageInference:
 
         # Run inference
         input_name = session.get_inputs()[0].name
-        # Image array shape is (batch_size, channels, height, width)
 
+        # Image array shape is (batch_size, channels, height, width)
         label_probabilities = []
         for start_idx in range(0, image_array.shape[0], batch_size):
-            end_idx = start_idx + batch_size
-            batch_array = image_array[start_idx:end_idx]
+            batch_array = image_array[start_idx:start_idx + batch_size]
 
             outputs = session.run(None, {input_name: batch_array})
 
@@ -100,14 +98,14 @@ class ImageInference:
         return label_predictions
 
 
-class VideoInference(ImageInference):
+class VideoClassifier(ImageClassifier):
 
-    def inference(self, file_path: Path) -> dict[str, list[str]]:
+    def classify(self, file_path: Path) -> dict[str, list[str]]:
         start_proc = time.time()
         np_frames_batch = self.processor.process(file_path)
         logger.info(f"Video processing done in {time.time() - start_proc:.2f}s")
 
-        results = self._model_inference(np_images_batch=np_frames_batch)
+        results = self._run_models(np_images_batch=np_frames_batch)
         freq = label_frequencies(results, min_count=1, min_percent=0.05)
 
         return {str(file_path): list(freq.keys())}

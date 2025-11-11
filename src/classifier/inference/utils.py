@@ -1,5 +1,7 @@
 from collections import Counter
+from pathlib import Path
 from itertools import chain
+from pydantic import BaseModel
 
 
 def label_frequencies(frames: list[list[str]], min_count: int = 1, min_percent: float = 0.0):
@@ -26,3 +28,34 @@ def flatten_labels(results: list[list[list[str]]]) -> list[list[str]]:
         flattened_results.append(list(image_labels))
 
     return flattened_results
+
+
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff"}
+VIDEO_EXTS = {".mp4", ".mov", ".mkv", ".avi", ".webm", ".flv", ".wmv"}
+
+def split_files_by_type(
+        files: list[Path]
+) -> tuple[list[Path], ...]:
+    images = []
+    videos = []
+    unsupported = []
+
+    for f in files:
+        p = Path(f)
+        ext = p.suffix.lower()
+
+        if ext in IMAGE_EXTS:
+            images.append(p)
+        elif ext in VIDEO_EXTS:
+            videos.append(p)
+        else:
+            unsupported.append(p)
+
+    return images, videos, unsupported
+
+class MediaClassificationModel(BaseModel):
+    media_id: str
+    file_path: str
+
+class ContentClassificationEvent(BaseModel):
+    results: list[MediaClassificationModel]

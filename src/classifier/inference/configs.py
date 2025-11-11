@@ -48,3 +48,5 @@ class OnnxModelConfig:
 
 class InferenceConfig(BaseSettings):
     IMAGE_PROCESSING_WORKERS: int = 4
+    # Do not change this value unless you know what you are doing
+    MAX_INFERENCE_BATCH_SIZE: int = 32 #96
